@@ -1,0 +1,772 @@
+﻿<!--<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">-->
+@*<title>EShopper - Bootstrap Shop Template</title>*@
+<!--<title>@ViewBag.Title </title>
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+
+<!-- Favicon -->
+@*-->*@
+<!--@*<link href="img/favicon.ico" rel="icon">*@-->
+<!--<!-- Bootstrap icon -->
+<!--<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">-->
+<!-- Google Web Fonts -->
+<!--<link rel="preconnect" href="https://fonts.gstatic.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">-->
+<!-- Font Awesome -->
+<!--<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">-->
+<!-- Libraries Stylesheet -->
+<!--<link href="~/Scripts/lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet">-->
+<!-- Customized Bootstrap Stylesheet -->
+<!--<link href="~/Content/css/style.css" rel="stylesheet">
+</head>
+
+<body>-->
+<!-- Topbar Start -->
+<!--<div class="container-fluid">
+    <div class="row align-items-center py-3 px-xl-5">
+        <div class="col-lg-3 d-none d-lg-block">
+            <a href="@Url.Action("index","home")" class="text-decoration-none">
+                <h1 class="m-0 display-5 font-weight-semi-bold"><span class="text-primary font-weight-bold border px-3 mr-1">E</span>Shopper</h1>
+            </a>
+        </div>
+        <div class="col-lg-6 col-6 text-left">
+            <form action="">
+                <div class="input-group">
+                    <input type="text" class="form-control" placeholder="Search for products">
+                    <div class="input-group-append">
+                        <span class="input-group-text bg-transparent text-primary">
+                            <i class="fa fa-search"></i>
+                        </span>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="col-lg-3 col-6 text-right">-->
+@*<a href="" class="btn border">
+        <i class="fas fa-heart text-primary"></i>
+        <span class="badge">0</span>
+    </a>*@
+<!--<a href="@Url.Action("Cart","Home")" class="btn border">
+                <i class="fas fa-shopping-cart text-primary"></i>
+                <span class="badge">0</span>
+            </a>
+        </div>
+    </div>
+</div>-->
+<!-- Topbar End -->
+<!-- Navbar Start -->
+<!--<div class="container-fluid">
+    <div class="row border-top px-xl-5">
+        <div class="col-lg-3 d-none d-lg-block">
+            <a class="btn shadow-none d-flex align-items-center justify-content-between bg-primary text-white w-100" data-toggle="collapse" href="#navbar-vertical" style="height: 65px; margin-top: -1px; padding: 0 30px;">
+                <h6 class="m-0">Categories</h6>
+                <i class="fa fa-angle-down text-dark"></i>
+            </a>-->
+@*@Html.Action("CategoryMenu", "Home")*@
+<!--</div>
+<div class="col-lg-9">
+    <nav class="navbar navbar-expand-lg bg-light navbar-light py-3 py-lg-0 px-0">
+        <a href="" class="text-decoration-none d-block d-lg-none">
+            <h1 class="m-0 display-5 font-weight-semi-bold"><span class="text-primary font-weight-bold border px-3 mr-1">E</span>Shopper</h1>
+        </a>
+        <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbarCollapse">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse justify-content-between" id="navbarCollapse">
+            <div class="navbar-nav mr-auto py-0">
+                <a href="@Url.Action("shop","home")" class="nav-item nav-link">Shop</a>-->
+@*<div class="nav-item dropdown">
+        <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Pages</a>
+        <div class="dropdown-menu rounded-0 m-0">
+            <a href="cart.html" class="dropdown-item">Shopping Cart</a>
+            <a href="checkout.html" class="dropdown-item">Checkout</a>
+        </div>
+    </div>*@
+@*<a href="@Url.Action("contact","home")" class="nav-item nav-link">Contact</a>
+                            </div>
+    <div class="nav-item dropdown" id="userDropdown"></div>
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const token = localStorage.getItem("jwtToken");
+            const dropdown = document.getElementById("userDropdown");
+
+            if (token) {
+                try {
+                    // Giải mã payload của JWT (phần giữa)
+                    const payload = JSON.parse(atob(token.split('.')[1]));
+
+                    // Lấy username hoặc email fallback
+                    const userName = payload.UserName || payload.name || payload.email || "User";
+
+                    dropdown.innerHTML = `
+                                                                    <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                                                                        <i class="bi bi-person-circle"></i> ${userName}
+                                                                    </a>
+                                                                    <div class="dropdown-menu">
+                                                                        <a href="/Infomation" class="dropdown-item">Thông tin cá nhân</a>
+                                                                        <div class="dropdown-divider"></div>
+                                                                        <button id="logoutBtn" class="dropdown-item text-danger">Đăng xuất</button>
+                                                                    </div>
+                                                                `;
+                } catch (err) {
+                    console.error("JWT decode error:", err);
+                    localStorage.removeItem("jwtToken");
+                    window.location.reload();
+                }
+            } else {
+                dropdown.innerHTML = `
+                                                                <div class="d-flex gap-3 justify-content-center">
+                                                                    <a class="nav-link" href="/Auth/Login">Login</a>
+                                                                    <a class="nav-link" href="/Auth/Register">Register</a>
+                                                                </div>
+                                                            `;
+            }
+
+            // Xử lý đăng xuất
+            document.body.addEventListener("click", (e) => {
+                if (e.target.id === "logoutBtn") {
+                    localStorage.removeItem("jwtToken");
+                    window.location.href = "/";
+                }
+            });
+        });
+    </script>
+                        </div>
+                    </nav>
+                </div>
+            </div>
+        </div>-->*@
+<!-- Navbar End -->
+@*@RenderBody()*@
+<!-- Footer Start -->
+<!--<div class="container-fluid bg-secondary text-dark mt-5 pt-5">
+
+    <div class="row px-xl-5 pt-5">
+        <div class="col-lg-4 col-md-12 mb-5 pr-3 pr-xl-5">
+            <a href="" class="text-decoration-none">
+                <h1 class="mb-4 display-5 font-weight-semi-bold"><span class="text-primary font-weight-bold border border-white px-3 mr-1">E</span>Shopper</h1>
+            </a>
+            <p>We’re here to help! Whether you have questions, feedback, or just want to say hello, feel free to reach out to us.</p>
+            <p class="mb-2"><i class="fa fa-map-marker-alt text-primary mr-3"></i>140 Lê Trọng Tấn, TP.Hồ Chí Minh</p>
+            <p class="mb-2"><i class="fa fa-envelope text-primary mr-3"></i>nhom4@gmail.com</p>
+            <p class="mb-0"><i class="fa fa-phone-alt text-primary mr-3"></i>012 345 67890</p>
+        </div>
+        <div class="col-lg-8 col-md-12">
+            <div class="row">
+                <div class="col-md-4 mb-5">
+                    <h5 class="font-weight-bold text-dark mb-4">Quick Links</h5>
+                    <div class="d-flex flex-column justify-content-start">
+                        <a class="text-dark mb-2" href="@Url.Action("index", "home")"><i class="fa fa-angle-right mr-2"></i>Home</a>
+                        <a class="text-dark mb-2" href="shop.html"><i class="fa fa-angle-right mr-2"></i>Our Shop</a>
+                        <a class="text-dark mb-2" href="detail.html"><i class="fa fa-angle-right mr-2"></i>Shop Detail</a>
+                        <a class="text-dark mb-2" href="cart.html"><i class="fa fa-angle-right mr-2"></i>Shopping Cart</a>
+                        <a class="text-dark mb-2" href="checkout.html"><i class="fa fa-angle-right mr-2"></i>Checkout</a>
+                        <a class="text-dark" href="contact.html"><i class="fa fa-angle-right mr-2"></i>Contact Us</a>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-5">
+                    <h5 class="font-weight-bold text-dark mb-4">Quick Links</h5>
+                    <div class="d-flex flex-column justify-content-start">
+                        <a class="text-dark mb-2" href="index.html"><i class="fa fa-angle-right mr-2"></i>Home</a>
+                        <a class="text-dark mb-2" href="shop.html"><i class="fa fa-angle-right mr-2"></i>Our Shop</a>
+                        <a class="text-dark mb-2" href="detail.html"><i class="fa fa-angle-right mr-2"></i>Shop Detail</a>
+                        <a class="text-dark mb-2" href="cart.html"><i class="fa fa-angle-right mr-2"></i>Shopping Cart</a>
+                        <a class="text-dark mb-2" href="checkout.html"><i class="fa fa-angle-right mr-2"></i>Checkout</a>
+                        <a class="text-dark" href="contact.html"><i class="fa fa-angle-right mr-2"></i>Contact Us</a>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-5">
+                    <h5 class="font-weight-bold text-dark mb-4">Newsletter</h5>
+                    <form action="">
+                        <div class="form-group">
+                            <input type="text" class="form-control border-0 py-4" placeholder="Your Name" required="required" />
+                        </div>
+                        <div class="form-group">
+                            <input type="email" class="form-control border-0 py-4" placeholder="Your Email"
+                                   required="required" />
+                        </div>
+                        <div>
+                            <button class="btn btn-primary btn-block border-0 py-3" type="submit">Subscribe Now</button>
+                        </div>
+                    </form>
+                    <div class="row bg-secondary py-3   px-xl-5">
+                        <div class="col-lg-6 text-center text-lg-right">
+                            <div class="d-inline-flex align-items-center ">
+                                <a class="text-dark px-2" href="">
+                                    <i class="fab fa-facebook-f"></i>
+                                </a>
+                                <a class="text-dark px-2" href="">
+                                    <i class="fab fa-twitter"></i>
+                                </a>
+                                <a class="text-dark px-2" href="">
+                                    <i class="fab fa-linkedin-in"></i>
+                                </a>
+                                <a class="text-dark px-2" href="">
+                                    <i class="fab fa-instagram"></i>
+                                </a>
+                                <a class="text-dark pl-2" href="">
+                                    <i class="fab fa-youtube"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row border-top border-light mx-xl-5 py-4">
+
+        <div class="col-md-6 px-xl-0 text-center text-md-right">
+            <img class="img-fluid" src="img/payments.png" alt="">
+        </div>
+    </div>
+</div>-->
+<!-- Footer End -->
+<!-- Back to Top -->
+<!--<a href="#" class="btn btn-primary back-to-top"><i class="fa fa-angle-double-up"></i></a>-->
+<!-- JavaScript Libraries -->
+<!--<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
+<script src="~/Scripts/lib/easing/easing.min.js"></script>
+<script src="~/Scripts/lib/owlcarousel/owl.carousel.min.js"></script>-->
+<!-- Contact Javascript File -->
+<!--<script src="~/Scripts/mail/jqBootstrapValidation.min.js"></script>
+<script src="~/Scripts/mail/contact.js"></script>-->
+<!-- Template Javascript -->
+<!--<script src="~/Scripts/js/main.js"></script>
+    <script src="~/Scripts/bootstrap.bundle.min.js"></script>-->
+@*@RenderSection("Scripts", required: false)*@
+<!--</body>
+
+</html>-->
+
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>@ViewBag.Title - EShopper Premium</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+
+    <link href="~/Scripts/lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet">
+    <link href="~/Content/css/style.css" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary: #D19C97;
+            --primary-dark: #b88682;
+            --dark: #191919;
+            --light-bg: #fdfdfd;
+            --text-gray: #666;
+            --shadow-sm: 0 2px 8px rgba(0,0,0,0.04);
+            --shadow-md: 0 5px 15px rgba(0,0,0,0.08);
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--light-bg);
+            color: #333;
+            overflow-x: hidden;
+        }
+
+        h1, h2, h3, h4, h5 {
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        /* --- TOP BAR --- */
+        .top-bar {
+            background-color: #f8f9fa;
+            font-size: 0.8rem;
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+            color: var(--text-gray);
+        }
+
+        /* --- NAVBAR --- */
+        .navbar-custom {
+            background: #fff;
+            padding: 15px 0;
+            transition: all 0.3s ease;
+        }
+
+        .navbar-custom.sticky-top {
+            box-shadow: var(--shadow-md);
+            padding: 10px 0;
+        }
+
+        .brand-logo {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 800;
+            letter-spacing: 1px;
+            color: var(--dark);
+            text-decoration: none !important;
+            text-transform: uppercase;
+        }
+
+        .brand-logo span {
+            color: var(--primary);
+        }
+
+        .nav-link-custom {
+            color: var(--dark) !important;
+            font-weight: 500;
+            margin: 0 15px;
+            font-size: 0.95rem;
+            position: relative;
+            padding: 5px 0 !important;
+        }
+
+        .nav-link-custom::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: 0;
+            left: 0;
+            background-color: var(--primary);
+            transition: width 0.3s ease;
+        }
+
+        .nav-link-custom:hover::after {
+            width: 100%;
+        }
+
+        .nav-link-custom:hover {
+            color: var(--primary) !important;
+        }
+
+        /* --- SEARCH BOX --- */
+        .search-container {
+            position: relative;
+        }
+
+        .search-input {
+            border: 1px solid #e0e0e0;
+            border-radius: 50px;
+            padding: 8px 20px;
+            padding-right: 40px;
+            width: 220px;
+            transition: all 0.3s;
+            background: #fcfcfc;
+            font-size: 0.9rem;
+        }
+
+        .search-input:focus {
+            width: 280px;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(209, 156, 151, 0.2);
+            outline: none;
+        }
+
+        .search-icon {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #999;
+            pointer-events: none;
+        }
+
+        /* --- USER DROPDOWN & BUTTONS --- */
+        .btn-auth {
+            border-radius: 50px;
+            padding: 6px 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: 0.3s;
+        }
+
+        .btn-login {
+            color: var(--dark);
+            border: 1px solid #ddd;
+            background: #fff;
+        }
+        .btn-login:hover {
+            border-color: var(--dark);
+            background: #f8f8f8;
+            color: var(--dark);
+            text-decoration: none;
+        }
+
+        .btn-register {
+            background: var(--dark);
+            color: #fff;
+            border: 1px solid var(--dark);
+        }
+        .btn-register:hover {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: #fff;
+            text-decoration: none;
+        }
+
+        .user-pill {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 5px 8px 5px 15px;
+            background: #fff;
+            border: 1px solid #e5e5e5;
+            border-radius: 40px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .user-pill:hover, .user-pill[aria-expanded="true"] {
+            box-shadow: var(--shadow-sm);
+            border-color: var(--primary);
+        }
+
+        .user-avatar-circle {
+            width: 32px;
+            height: 32px;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+        }
+
+        /* --- FIX DROPDOWN (QUAN TRỌNG) --- */
+        .dropdown-menu-custom {
+            border: none;
+            box-shadow: var(--shadow-md);
+            border-radius: 12px;
+            padding: 10px;
+            margin-top: 15px !important; /* Tạo khoảng cách */
+            min-width: 220px;
+
+            /* Giữ menu hiển thị khi hover qua khoảng trắng */
+            display: none;
+        }
+
+        /* Hiển thị menu khi hover vào parent (.dropdown) */
+        .dropdown:hover .dropdown-menu-custom {
+            display: block;
+            animation: fadeIn 0.3s;
+        }
+
+        /* TẠO CẦU NỐI VÔ HÌNH (INVISIBLE BRIDGE) */
+        /* Lớp giả này sẽ lấp đầy khoảng trống giữa nút User và Menu */
+        .dropdown-menu-custom::before {
+            content: "";
+            position: absolute;
+            top: -20px; /* Kéo dài lên trên để che khoảng trống margin-top */
+            left: 0;
+            width: 100%;
+            height: 20px;
+            background: transparent;
+        }
+
+        /* Mũi tên nhỏ trỏ lên (Optional - Trang trí) */
+        .dropdown-menu-custom::after {
+            content: "";
+            position: absolute;
+            top: -6px;
+            right: 20px;
+            width: 12px;
+            height: 12px;
+            background: white;
+            transform: rotate(45deg);
+            box-shadow: -2px -2px 5px rgba(0,0,0,0.04);
+        }
+
+        @@keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .dropdown-item-custom {
+            border-radius: 8px;
+            padding: 8px 15px;
+            color: #555;
+            transition: 0.2s;
+        }
+
+        .dropdown-item-custom:hover {
+            background-color: #fceceb;
+            color: var(--primary-dark);
+        }
+
+        /* --- FOOTER --- */
+        .footer-premium {
+            background: #1a1a1a;
+            color: #b0b0b0;
+            padding-top: 80px;
+            margin-top: 60px;
+        }
+
+        .footer-heading {
+            color: #fff;
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin-bottom: 25px;
+            position: relative;
+            padding-bottom: 10px;
+        }
+
+        .footer-heading::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            width: 40px;
+            height: 2px;
+            background: var(--primary);
+        }
+
+        .footer-links a {
+            color: #b0b0b0;
+            display: block;
+            margin-bottom: 12px;
+            text-decoration: none;
+            transition: 0.3s;
+        }
+
+        .footer-links a:hover {
+            color: #fff;
+            transform: translateX(5px);
+        }
+
+        .social-btn {
+            width: 40px;
+            height: 40px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: #333;
+            color: #fff;
+            border-radius: 50%;
+            margin-right: 10px;
+            transition: 0.3s;
+            text-decoration: none;
+        }
+
+        .social-btn:hover {
+            background: var(--primary);
+            color: #fff;
+            transform: translateY(-3px);
+        }
+
+        .newsletter-input {
+            background: #333;
+            border: none;
+            padding: 25px 20px;
+            color: #fff;
+            border-radius: 5px;
+        }
+
+        .newsletter-input:focus {
+            background: #444;
+            color: #fff;
+            box-shadow: none;
+        }
+
+        .main-content {
+            min-height: 80vh;
+            padding-top: 40px;
+            padding-bottom: 40px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container-fluid px-5 top-bar d-none d-lg-block">
+        <div class="container-fluid px-5 d-flex justify-content-between">
+            <div>
+                <span class="mr-3"><i class="bi bi-envelope mr-1"></i> support@eshopper.com</span>
+                <span><i class="bi bi-telephone mr-1"></i> +012 345 6789</span>
+            </div>
+            <div>
+                <span class="mr-3">Free shipping on orders over $50</span>
+                <span><i class="bi bi-globe mr-1"></i> ENG</span>
+            </div>
+        </div>
+    </div>
+
+    <nav class="navbar container-fluid px-5 navbar-expand-lg navbar-custom sticky-top">
+        <div class="container-fluid px-5">
+            <a href="@Url.Action("index","home")" class="brand-logo mr-lg-5">
+                <span>E</span>Shopper
+            </a>
+
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarContent" style="border:none; outline:none;">
+                <span class="bi bi-list" style="font-size: 1.5rem; color: #333;"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarContent">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item"><a href="@Url.Action("index","home")" class="nav-link nav-link-custom">Home</a></li>
+                    <li class="nav-item"><a href="@Url.Action("shop","home")" class="nav-link nav-link-custom">Shop</a></li>
+                    <li class="nav-item"><a href="@Url.Action("Cart","Home")" class="nav-link nav-link-custom">Cart</a></li>
+                    <li class="nav-item"><a href="@Url.Action("contact","home")" class="nav-link nav-link-custom">Contact</a></li>
+                </ul>
+
+                <div class="d-flex align-items-center flex-column flex-lg-row">
+                    <form class="search-container mr-lg-4 mb-3 mb-lg-0">
+                        <input type="text" class="search-input" placeholder="Search products...">
+                        <i class="bi bi-search search-icon"></i>
+                    </form>
+
+                    <a href="@Url.Action("Cart","Home")" class="text-dark mr-lg-4 mb-3 mb-lg-0 position-relative" style="font-size: 1.2rem;">
+                        <i class="bi bi-bag"></i>
+                    </a>
+
+                    <div id="userDropdown"></div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid px-5 main-content">
+        @RenderBody()
+    </div>
+
+    <footer class="footer-premium container-fluid px-5">
+        <div class="container-fluid px-5">
+            <div class="row">
+                <div class="col-lg-4 col-md-6 mb-5">
+                    <a href="@Url.Action("index","home")" class="text-decoration-none">
+                        <h2 class="mb-4 text-white" style="font-weight: 700; font-family: 'Montserrat', sans-serif;">
+                            <span class="text-primary">E</span>Shopper
+                        </h2>
+                    </a>
+                    <p class="mb-4" style="line-height: 1.8;">
+                        Nơi phong cách gặp gỡ chất lượng. Chúng tôi mang đến những bộ sưu tập thời trang thời thượng nhất dành cho bạn.
+                    </p>
+                    <div class="d-flex">
+                        <a class="social-btn" href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a class="social-btn" href="#"><i class="fab fa-instagram"></i></a>
+                        <a class="social-btn" href="#"><i class="fab fa-twitter"></i></a>
+                        <a class="social-btn" href="#"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+
+                <div class="col-lg-2 col-md-6 mb-5 footer-links">
+                    <h5 class="footer-heading">Shop</h5>
+                    <a href="#">New Arrivals</a>
+                    <a href="#">Trending</a>
+                    <a href="#">Men's Fashion</a>
+                    <a href="#">Women's Fashion</a>
+                    <a href="#">Accessories</a>
+                </div>
+
+                <div class="col-lg-2 col-md-6 mb-5 footer-links">
+                    <h5 class="footer-heading">Company</h5>
+                    <a href="#">About Us</a>
+                    <a href="#">Contact</a>
+                    <a href="#">Privacy Policy</a>
+                    <a href="#">Terms & Conditions</a>
+                </div>
+
+                <div class="col-lg-4 col-md-6 mb-5">
+                    <h5 class="footer-heading">Newsletter</h5>
+                    <p>Đăng ký để nhận thông tin khuyến mãi mới nhất.</p>
+                    <form action="">
+                        <div class="input-group">
+                            <input type="email" class="form-control newsletter-input" placeholder="Your Email Address">
+                            <div class="input-group-append">
+                                <button class="btn btn-primary px-4" style="border-radius: 0 5px 5px 0;">Sign Up</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="border-top border-secondary pt-4 pb-4 mt-3">
+                <div class="row align-items-center">
+                    <div class="col-md-6 text-center text-md-left">
+                        <p class="mb-0 small text-muted">&copy; 2023 <strong class="text-white">EShopper</strong>. All Rights Reserved.</p>
+                    </div>
+                    <div class="col-md-6 text-center text-md-right mt-2 mt-md-0">
+                        <img class="img-fluid" src="img/payments.png" alt="" style="max-height: 25px; opacity: 0.7;">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <a href="#" class="btn btn-primary back-to-top" style="border-radius: 5px;"><i class="fa fa-angle-double-up"></i></a>
+
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
+    <script src="~/Scripts/lib/easing/easing.min.js"></script>
+    <script src="~/Scripts/lib/owlcarousel/owl.carousel.min.js"></script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const token = localStorage.getItem("jwtToken");
+            const dropdown = document.getElementById("userDropdown");
+
+            if (token) {
+                try {
+                    const payload = JSON.parse(atob(token.split('.')[1]));
+                    const userName = payload.UserName || payload.name || payload.email || "User";
+                    const firstLetter = userName.charAt(0).toUpperCase();
+
+                    dropdown.innerHTML = `
+                            <div class="dropdown">
+                                <div class="user-pill">
+                                    <div class="user-avatar-circle">${firstLetter}</div>
+                                    <span class="font-weight-bold small text-dark">${userName}</span>
+                                    <i class="bi bi-chevron-down small text-muted ml-1"></i>
+                                </div>
+                                <div class="dropdown-menu dropdown-menu-right dropdown-menu-custom">
+                                    <div class="px-3 py-2 border-bottom mb-2">
+                                        <small class="text-muted">Signed in as</small><br>
+                                        <strong>${userName}</strong>
+                                    </div>
+                                    <a href="/Infomation" class="dropdown-item dropdown-item-custom">
+                                        <i class="bi bi-person mr-2"></i> Hồ sơ cá nhân
+                                    </a>
+                                    <a href="/Order/History" class="dropdown-item dropdown-item-custom">
+                                        <i class="bi bi-receipt mr-2"></i> Đơn mua
+                                    </a>
+                                    <div class="dropdown-divider my-2"></div>
+                                    <button id="logoutBtn" class="dropdown-item dropdown-item-custom text-danger">
+                                        <i class="bi bi-box-arrow-right mr-2"></i> Đăng xuất
+                                    </button>
+                                </div>
+                            </div>
+                        `;
+                } catch (err) {
+                    console.error("JWT decode error:", err);
+                    localStorage.removeItem("jwtToken");
+                }
+            } else {
+                dropdown.innerHTML = `
+                        <div class="d-flex align-items-center gap-2">
+                            <a class="btn-auth btn-login mr-2" href="/Auth/Login">Log In</a>
+                            <a class="btn-auth btn-register" href="/Auth/Register">Register</a>
+                        </div>
+                    `;
+            }
+
+            if (dropdown) {
+                dropdown.addEventListener("click", (e) => {
+                    if (e.target.id === "logoutBtn" || e.target.closest('#logoutBtn')) {
+                        localStorage.removeItem("jwtToken");
+                        window.location.href = "/";
+                    }
+                });
+            }
+        });
+    </script>
+    <script src="~/Scripts/js/main.js"></script>
+    @RenderSection("Scripts", required: false)
+</body>
+</html>
