@@ -1,0 +1,362 @@
+﻿@model ESHOPPER.Models.KhachHang
+
+@{
+    ViewBag.Title = "Hồ sơ cá nhân";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    /* --- VARIABLES --- */
+    :root {
+        --primary: #D19C97;
+        --dark: #191919;
+        --light-bg: #f8f9fa;
+        --input-bg: #f4f5f7;
+        --card-radius: 16px;
+    }
+
+    /* --- LAYOUT & CARD --- */
+    .profile-section {
+        background-color: var(--light-bg);
+        min-height: 80vh;
+        padding-top: 40px;
+        padding-bottom: 60px;
+    }
+
+    .card-modern {
+        background: #fff;
+        border: none;
+        border-radius: var(--card-radius);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.03);
+        overflow: hidden;
+        transition: transform 0.3s ease;
+    }
+
+    /* --- SIDEBAR --- */
+    .avatar-container {
+        position: relative;
+        width: 110px;
+        height: 110px;
+        margin: 0 auto;
+    }
+
+    .profile-avatar {
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, #eee 0%, #dcdcdc 100%);
+        color: var(--dark);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 40px;
+        font-weight: 700;
+        border: 4px solid #fff;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+
+    .profile-name {
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 700;
+        color: var(--dark);
+        margin-top: 15px;
+    }
+
+    .profile-email {
+        color: #888;
+        font-size: 0.9rem;
+    }
+
+    .nav-modern {
+        padding: 0 15px;
+    }
+
+        .nav-modern .nav-link {
+            color: #666;
+            padding: 15px 20px;
+            margin-bottom: 8px;
+            border-radius: 10px;
+            font-weight: 500;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+        }
+
+            .nav-modern .nav-link i {
+                width: 25px;
+                font-size: 1.1rem;
+                margin-right: 10px;
+                color: #999;
+                transition: 0.2s;
+            }
+
+            .nav-modern .nav-link:hover {
+                background-color: #fdfdfd;
+                color: var(--primary);
+            }
+
+            .nav-modern .nav-link.active {
+                background-color: #fff0f0; /* Màu hồng rất nhạt */
+                color: var(--primary);
+                font-weight: 600;
+            }
+
+                .nav-modern .nav-link.active i {
+                    color: var(--primary);
+                }
+
+    /* --- FORMS --- */
+    .form-header {
+        border-bottom: 1px solid #eee;
+        padding-bottom: 20px;
+        margin-bottom: 30px;
+    }
+
+        .form-header h5 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            color: var(--dark);
+        }
+
+    .form-label-custom {
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: #555;
+        margin-bottom: 8px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        display: block; /* Đảm bảo label nằm trên dòng riêng */
+    }
+
+    .form-control-modern {
+        background-color: var(--input-bg);
+        border: 1px solid transparent;
+        border-radius: 8px;
+        padding: 12px 15px;
+        font-size: 0.95rem;
+        color: #333;
+        transition: all 0.3s;
+        width: 100%;
+        height: 50px; /* Chiều cao cố định để đồng bộ */
+    }
+
+        .form-control-modern:focus {
+            background-color: #fff;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(209, 156, 151, 0.1);
+            color: #333;
+            outline: none;
+        }
+
+        .form-control-modern[readonly] {
+            background-color: #e9ecef;
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+    /* FIX RIÊNG CHO THẺ SELECT (COMBOBOX) ĐỂ KHÔNG BỊ CHE CHỮ */
+    select.form-control-modern {
+        padding-top: 10px !important;
+        padding-bottom: 10px !important;
+        line-height: 1.5;
+        appearance: none; /* Xóa mũi tên mặc định để tự custom (nếu muốn) hoặc dùng mũi tên mặc định */
+        -webkit-appearance: menulist; /* Giữ mũi tên mặc định của trình duyệt cho an toàn */
+    }
+
+    .btn-save {
+        background-color: var(--dark);
+        color: #fff;
+        padding: 12px 30px;
+        border-radius: 30px;
+        border: none;
+        font-weight: 600;
+        letter-spacing: 1px;
+        transition: 0.3s;
+        cursor: pointer;
+    }
+
+        .btn-save:hover {
+            background-color: var(--primary);
+            color: #fff;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(209, 156, 151, 0.4);
+        }
+</style>
+
+<div class="profile-section">
+    <div class="container">
+
+        @if (TempData["Success"] != null)
+        {
+            <div class="alert alert-success border-0 shadow-sm rounded-lg mb-4" role="alert" style="background-color: #d4edda; color: #155724;">
+                <div class="d-flex align-items-center">
+                    <i class="fas fa-check-circle mr-3" style="font-size: 1.5rem;"></i>
+                    <div>@TempData["Success"]</div>
+                </div>
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        }
+        @if (TempData["Error"] != null)
+        {
+            <div class="alert alert-danger border-0 shadow-sm rounded-lg mb-4" role="alert" style="background-color: #f8d7da; color: #721c24;">
+                <div class="d-flex align-items-center">
+                    <i class="fas fa-exclamation-circle mr-3" style="font-size: 1.5rem;"></i>
+                    <div>@TempData["Error"]</div>
+                </div>
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        }
+
+        <div class="row">
+            <div class="col-lg-4 mb-4">
+                <div class="card-modern h-100">
+                    <div class="card-body text-center py-5">
+                        <div class="avatar-container mb-3">
+                            <div class="profile-avatar">
+                                @if (!string.IsNullOrEmpty(Model.TenKH))
+                                {
+                                    @Model.TenKH.Substring(0, 1).ToUpper()
+                                }
+                                else
+                                {
+                                    <span>U</span>
+                                }
+                            </div>
+                        </div>
+                        <h4 class="profile-name">@Model.TenKH</h4>
+                        <p class="profile-email mb-4">
+                            @(Model.User != null ? Model.User.Email : "Chưa cập nhật email")
+                        </p>
+
+                        <div class="nav flex-column nav-pills nav-modern text-left" id="v-pills-tab" role="tablist">
+                            <a class="nav-link active" data-toggle="pill" href="#tab-info">
+                                <i class="bi bi-person-gear"></i> Thông tin cá nhân
+                            </a>
+                            <a class="nav-link" data-toggle="pill" href="#tab-security">
+                                <i class="bi bi-shield-lock"></i> Đổi mật khẩu
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-8">
+                <div class="tab-content">
+
+                    <div class="tab-pane fade show active" id="tab-info">
+                        <div class="card-modern p-4 p-md-5">
+                            <div class="form-header d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0">Chỉnh sửa hồ sơ</h5>
+                                <span class="text-muted small"><i class="fas fa-lock mr-1"></i> Thông tin bảo mật</span>
+                            </div>
+
+                            @using (Html.BeginForm("UpdateInfo", "Home", new { area = "" }, FormMethod.Post))
+                            {
+                                @Html.AntiForgeryToken()
+                                @Html.HiddenFor(m => m.MaKH)
+                                @Html.HiddenFor(m => m.UserId)
+
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <div class="form-group">
+                                            <label class="form-label-custom">Họ và tên</label>
+                                            @Html.TextBoxFor(m => m.TenKH, new { @class = "form-control form-control-modern", required = "required", placeholder = "Nhập họ tên của bạn" })
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <div class="form-group">
+                                            <label class="form-label-custom">Số điện thoại</label>
+                                            @Html.TextBoxFor(m => m.SoDT, new { @class = "form-control form-control-modern", placeholder = "Nhập số điện thoại" })
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <div class="form-group">
+                                            <label class="form-label-custom">Ngày sinh</label>
+                                            <input type="date" name="BirthDayKH" class="form-control form-control-modern"
+                                                   value="@(Model.BirthDayKH.HasValue ? Model.BirthDayKH.Value.ToString("yyyy-MM-dd") : "")" />
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <div class="form-group">
+                                            <label class="form-label-custom">Giới tính</label>
+                                            <select name="GioiTinhKH" class="form-control form-control-modern">
+                                                <option value="">-- Chọn --</option>
+                                                <option value="Nam" @(Model.GioiTinhKH == "Nam" ? "selected" : "")>Nam</option>
+                                                <option value="Nữ" @(Model.GioiTinhKH == "Nữ" ? "selected" : "")>Nữ</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-group mb-4">
+                                    <label class="form-label-custom">Địa chỉ Email</label>
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text border-0 bg-light pl-3" style="height: 50px;"><i class="bi bi-envelope text-muted"></i></span>
+                                        </div>
+                                        <input type="text" class="form-control form-control-modern bg-light border-0" value="@(Model.User != null ? Model.User.Email : "")" readonly />
+                                    </div>
+                                    <small class="text-muted mt-2 d-block pl-1"><i class="fas fa-info-circle mr-1"></i> Bạn không thể thay đổi địa chỉ email đăng nhập.</small>
+                                </div>
+
+                                <div class="text-right">
+                                    <button type="submit" class="btn btn-save">
+                                        Lưu thay đổi
+                                    </button>
+                                </div>
+                            }
+                        </div>
+                    </div>
+
+                    <div class="tab-pane fade" id="tab-security">
+                        <div class="card-modern p-4 p-md-5">
+                            <div class="form-header">
+                                <h5 class="mb-0 text-danger">Bảo mật tài khoản</h5>
+                                <p class="text-muted small mb-0 mt-1">Đổi mật khẩu định kỳ để bảo vệ tài khoản của bạn.</p>
+                            </div>
+
+                            @using (Html.BeginForm("ChangePassword", "Home", new { area = "" }, FormMethod.Post))
+                            {
+                                @Html.AntiForgeryToken()
+
+                                <div class="form-group mb-4">
+                                    <label class="form-label-custom">Mật khẩu hiện tại</label>
+                                    <input type="password" name="currentPassword" class="form-control form-control-modern" required placeholder="Nhập mật khẩu cũ">
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <div class="form-group">
+                                            <label class="form-label-custom">Mật khẩu mới</label>
+                                            <input type="password" name="newPassword" class="form-control form-control-modern" required minlength="6" placeholder="Tối thiểu 6 ký tự">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <div class="form-group">
+                                            <label class="form-label-custom">Xác nhận mật khẩu mới</label>
+                                            <input type="password" name="confirmPassword" class="form-control form-control-modern" required placeholder="Nhập lại mật khẩu mới">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="text-right mt-3">
+                                    <button type="submit" class="btn btn-save" style="background-color: #dc3545;">
+                                        Cập nhật mật khẩu
+                                    </button>
+                                </div>
+                            }
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
