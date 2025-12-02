@@ -1,0 +1,188 @@
+﻿@model QlyKhachHang.Models.Payment
+
+@{
+    ViewData["Title"] = "Xóa Thanh Toán";
+}
+
+@section Head {
+    <link rel="stylesheet" href="~/css/payment-management.css" />
+}
+
+<div class="payment-delete-container">
+    <div class="row">
+        <div class="col-md-6 offset-md-3">
+            <div class="card delete-card">
+                <div class="card-header bg-danger text-white">
+                    <i class="fas fa-trash"></i> Xóa Bản Ghi Thanh Toán
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-danger" role="alert">
+                        <h5 class="alert-heading">
+                            <i class="fas fa-exclamation-triangle"></i> Xác Nhận Xóa
+                        </h5>
+                        <p>Bạn chắc chắn muốn xóa bản ghi thanh toán này không?</p>
+                    </div>
+
+                    <!-- Payment Details -->
+                    <div class="payment-summary mb-4">
+                        <div class="summary-item">
+                            <span class="label">Mã Thanh Toán:</span>
+                            <span class="value"><strong>@Model.PaymentId</strong></span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="label">Hóa Đơn:</span>
+                            <span class="value"><strong>@Model.Invoice?.InvoiceNumber</strong></span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="label">Khách Hàng:</span>
+                            <span class="value"><strong>@Model.Invoice?.Customer?.CustomerName</strong></span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="label">Số Tiền:</span>
+                            <span class="value amount"><strong>@Model.Amount.ToString("C")</strong></span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="label">Phương Thức:</span>
+                            <span class="value"><strong>@Model.PaymentMethod</strong></span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="label">Trạng Thái:</span>
+                            <span class="value">
+                                @{
+                                    string statusClass = Model.Status switch
+                                    {
+                                        "Completed" => "success",
+                                        "Pending" => "warning",
+                                        "Failed" => "danger",
+                                        "Refunded" => "info",
+                                        _ => "secondary"
+                                    };
+                                    string statusText = Model.Status switch
+                                    {
+                                        "Completed" => "Hoàn Thành",
+                                        "Pending" => "Chờ Xác Nhận",
+                                        "Failed" => "Thất Bại",
+                                        "Refunded" => "Hoàn Lại",
+                                        _ => "Khác"
+                                    };
+                                }
+                                <span class="badge bg-@statusClass">@statusText</span>
+                            </span>
+                        </div>
+                    </div>
+
+                    @if (Model.Status != "Pending")
+                    {
+                        <div class="alert alert-warning">
+                            <i class="fas fa-exclamation-circle"></i>
+                            <strong>Cảnh báo:</strong> Chỉ có thể xóa các bản ghi thanh toán đang chờ xác nhận.
+                            Bản ghi này không thể xóa được vì đã được xác nhận.
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle"></i>
+                            <strong>Thông tin:</strong> Xóa bản ghi này sẽ hoàn lại số tiền vào hóa đơn.
+                        </div>
+
+                        <!-- Confirmation Form -->
+                        <form asp-action="Delete" method="post" class="mt-4">
+                            <input type="hidden" asp-for="PaymentId" />
+
+                            <div class="form-group mb-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="confirmDelete" required>
+                                    <label class="form-check-label" for="confirmDelete">
+                                        Tôi chắc chắn muốn xóa bản ghi thanh toán này
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="d-grid gap-2">
+                                <button type="submit" class="btn btn-danger btn-lg">
+                                    <i class="fas fa-trash"></i> Xóa Thanh Toán
+                                </button>
+                            </div>
+                        </form>
+                    }
+
+                    <!-- Cancel Button -->
+                    <a asp-action="Details" asp-route-id="@Model.PaymentId" class="btn btn-secondary btn-lg w-100 mt-3">
+                        <i class="fas fa-arrow-left"></i> Quay Lại
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .payment-delete-container {
+        padding: 30px 0;
+    }
+
+    .delete-card {
+        border: none;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+    }
+
+    .payment-summary {
+        background-color: #f8f9fa;
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        padding: 15px;
+    }
+
+    .summary-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 10px 0;
+        border-bottom: 1px solid #dee2e6;
+    }
+
+        .summary-item:last-child {
+            border-bottom: none;
+        }
+
+        .summary-item .label {
+            font-weight: 500;
+            color: #666;
+        }
+
+        .summary-item .value {
+            text-align: right;
+            color: #333;
+        }
+
+        .summary-item .amount {
+            color: #28a745;
+            font-size: 1.1rem;
+        }
+
+    .d-grid {
+        display: grid;
+    }
+
+        .d-grid.gap-2 {
+            gap: 0.5rem;
+        }
+</style>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const confirmCheckbox = document.getElementById('confirmDelete');
+            const submitButton = document.querySelector('button[type="submit"]');
+
+            if (confirmCheckbox && submitButton) {
+                // Disable submit button initially if checkbox is unchecked
+                submitButton.disabled = !confirmCheckbox.checked;
+
+                confirmCheckbox.addEventListener('change', function() {
+                    submitButton.disabled = !this.checked;
+                });
+            }
+        });
+    </script>
+}

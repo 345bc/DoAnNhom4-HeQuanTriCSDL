@@ -1,0 +1,239 @@
+@model Invoice
+
+@{
+    ViewData["Title"] = "T?o Hóa ??n";
+}
+
+<div class="invoice-create-container">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <!-- Header -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="page-title">
+                    <i class="fas fa-file-invoice-dollar"></i> @ViewData["Title"]
+                </h2>
+                <a asp-action="Index" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Quay L?i
+                </a>
+            </div>
+
+            <!-- Form -->
+            <div class="card create-card">
+                <div class="card-body">
+                    <form asp-action="Create" method="post" novalidate>
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <i class="fas fa-exclamation-circle"></i>
+                            <strong>Có l?i x?y ra!</strong>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+
+                        <!-- Customer Selection -->
+                        <div class="mb-3">
+                            <label asp-for="CustomerId" class="form-label">
+                                <i class="fas fa-user"></i> Khách Hàng <span class="text-danger">*</span>
+                            </label>
+                            <select asp-for="CustomerId" asp-items="@(ViewData["CustomerId"] as SelectList)" class="form-select form-control-lg" required>
+                                <option value="">-- Ch?n Khách Hàng --</option>
+                            </select>
+                            <span asp-validation-for="CustomerId" class="text-danger"></span>
+                            <small class="form-text text-muted">
+                                <i class="fas fa-info-circle"></i> Ch?n khách hàng ?? liên k?t v?i hóa ??n
+                            </small>
+                        </div>
+
+                        <!-- Invoice Number (Auto-generated) -->
+                        <div class="mb-3">
+                            <label asp-for="InvoiceNumber" class="form-label">
+                                <i class="fas fa-barcode"></i> Mã Hóa ??n
+                            </label>
+                            <input asp-for="InvoiceNumber" class="form-control form-control-lg" placeholder="?? tr?ng ?? t? ??ng sinh mã">
+                            <span asp-validation-for="InvoiceNumber" class="text-danger"></span>
+                            <small class="form-text text-muted">
+                                <i class="fas fa-lightbulb"></i> N?u ?? tr?ng, h? th?ng s? t? ??ng sinh mã hóa ??n
+                            </small>
+                        </div>
+
+                        <!-- Invoice Date -->
+                        <div class="mb-3">
+                            <label asp-for="InvoiceDate" class="form-label">
+                                <i class="fas fa-calendar"></i> Ngày L?p Hóa ??n <span class="text-danger">*</span>
+                            </label>
+                            <input asp-for="InvoiceDate" type="datetime-local" class="form-control form-control-lg" required>
+                            <span asp-validation-for="InvoiceDate" class="text-danger"></span>
+                            <small class="form-text text-muted">
+                                <i class="fas fa-info-circle"></i> Ch?n ngày và gi? l?p hóa ??n
+                            </small>
+                        </div>
+
+                        <!-- Total Amount -->
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="TotalAmount" class="form-label">
+                                    <i class="fas fa-dollar-sign"></i> T?ng Ti?n (VN?) <span class="text-danger">*</span>
+                                </label>
+                                <input asp-for="TotalAmount" type="number" class="form-control form-control-lg" step="1000" min="0" required>
+                                <span asp-validation-for="TotalAmount" class="text-danger"></span>
+                            </div>
+
+                            <!-- Paid Amount -->
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="PaidAmount" class="form-label">
+                                    <i class="fas fa-money-check-alt"></i> ?ã Thanh Toán (VN?)
+                                </label>
+                                <input asp-for="PaidAmount" type="number" class="form-control form-control-lg" step="1000" min="0" value="0">
+                                <span asp-validation-for="PaidAmount" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <!-- Status -->
+                        <div class="mb-3">
+                            <label asp-for="Status" class="form-label">
+                                <i class="fas fa-info-circle"></i> Tr?ng Thái <span class="text-danger">*</span>
+                            </label>
+                            <select asp-for="Status" class="form-select form-control-lg" required>
+                                <option value="">-- Ch?n Tr?ng Thái --</option>
+                                <option value="Pending">Ch? Xác Nh?n</option>
+                                <option value="Completed">Hoàn Thành</option>
+                                <option value="Cancelled">?ã H?y</option>
+                            </select>
+                            <span asp-validation-for="Status" class="text-danger"></span>
+                        </div>
+
+                        <!-- Notes -->
+                        <div class="mb-3">
+                            <label asp-for="Notes" class="form-label">
+                                <i class="fas fa-sticky-note"></i> Ghi Chú
+                            </label>
+                            <textarea asp-for="Notes" class="form-control" rows="3" placeholder="Nh?p ghi chú (tùy ch?n)"></textarea>
+                            <span asp-validation-for="Notes" class="text-danger"></span>
+                            <small class="form-text text-muted">
+                                <i class="fas fa-info-circle"></i> Ghi chú riêng v? hóa ??n (n?u có)
+                            </small>
+                        </div>
+
+                        <!-- Summary Card -->
+                        <div class="card summary-card mb-4">
+                            <div class="card-header bg-light">
+                                <h6 class="mb-0"><i class="fas fa-calculator"></i> Tóm T?t</h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="summary-row">
+                                    <span>T?ng Ti?n:</span>
+                                    <strong id="totalDisplay">0 VN?</strong>
+                                </div>
+                                <div class="summary-row">
+                                    <span>?ã Thanh Toán:</span>
+                                    <strong id="paidDisplay" class="text-success">0 VN?</strong>
+                                </div>
+                                <div class="summary-row border-top pt-3 mt-3">
+                                    <span>Còn N?:</span>
+                                    <strong id="remainingDisplay" class="text-danger">0 VN?</strong>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a asp-action="Index" class="btn btn-lg btn-secondary">
+                                <i class="fas fa-times"></i> H?y
+                            </a>
+                            <button type="submit" class="btn btn-lg btn-primary">
+                                <i class="fas fa-save"></i> T?o Hóa ??n
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .invoice-create-container {
+        padding: 30px 0;
+    }
+
+    .page-title {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #333;
+    }
+
+    .create-card {
+        border: none;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        border-radius: 8px;
+    }
+
+    .form-control-lg, .form-select {
+        padding: 12px 15px;
+        font-size: 1rem;
+    }
+
+    .summary-card {
+        border: none;
+        background-color: #f8f9fa;
+        border-radius: 8px;
+    }
+
+    .summary-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 12px 0;
+        border-bottom: 1px solid #dee2e6;
+    }
+
+    .summary-row:last-child {
+        border-bottom: none;
+    }
+
+    .summary-row span {
+        color: #666;
+        font-weight: 500;
+    }
+
+    .summary-row strong {
+        font-size: 1.1rem;
+    }
+
+    .form-label {
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 8px;
+    }
+
+    .text-danger {
+        color: #dc3545;
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const totalInput = document.querySelector('input[name="TotalAmount"]');
+        const paidInput = document.querySelector('input[name="PaidAmount"]');
+        const totalDisplay = document.getElementById('totalDisplay');
+        const paidDisplay = document.getElementById('paidDisplay');
+        const remainingDisplay = document.getElementById('remainingDisplay');
+
+        function updateSummary() {
+            const total = parseFloat(totalInput.value) || 0;
+            const paid = parseFloat(paidInput.value) || 0;
+            const remaining = total - paid;
+
+            totalDisplay.textContent = total.toLocaleString('vi-VN') + ' VN?';
+            paidDisplay.textContent = paid.toLocaleString('vi-VN') + ' VN?';
+            remainingDisplay.textContent = remaining.toLocaleString('vi-VN') + ' VN?';
+        }
+
+        totalInput.addEventListener('change', updateSummary);
+        totalInput.addEventListener('input', updateSummary);
+        paidInput.addEventListener('change', updateSummary);
+        paidInput.addEventListener('input', updateSummary);
+
+        updateSummary();
+    });
+</script>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

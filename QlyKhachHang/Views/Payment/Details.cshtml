@@ -1,0 +1,238 @@
+﻿@model QlyKhachHang.Models.Payment
+
+@{
+    ViewData["Title"] = "Chi Tiết Thanh Toán";
+}
+
+@section Head {
+    <link rel="stylesheet" href="~/css/payment-management.css" />
+}
+
+<div class="payment-details-container">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card details-card">
+                <div class="card-header">
+                    <i class="fas fa-receipt"></i> Chi Tiết Thanh Toán
+                </div>
+                <div class="card-body">
+                    <!-- Status Badge -->
+                    <div class="text-center mb-4">
+                        @{
+                            string statusClass = Model.Status switch
+                            {
+                                "Completed" => "success",
+                                "Pending" => "warning",
+                                "Failed" => "danger",
+                                "Refunded" => "info",
+                                _ => "secondary"
+                            };
+                            string statusText = Model.Status switch
+                            {
+                                "Completed" => "Hoàn Thành",
+                                "Pending" => "Chờ Xác Nhận",
+                                "Failed" => "Thất Bại",
+                                "Refunded" => "Hoàn Lại",
+                                _ => "Khác"
+                            };
+                        }
+                        <span class="badge bg-@statusClass fs-5">@statusText</span>
+                    </div>
+
+                    <!-- Basic Info -->
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <h6 class="text-muted mb-2">Mã Thanh Toán</h6>
+                            <p><strong>@Model.PaymentId</strong></p>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="text-muted mb-2">Ngày Thanh Toán</h6>
+                            <p><strong>@Model.PaymentDate.ToString("dd/MM/yyyy HH:mm:ss")</strong></p>
+                        </div>
+                    </div>
+
+                    <hr />
+
+                    <!-- Invoice Info -->
+                    <div class="section-header mb-3">
+                        <i class="fas fa-file-invoice"></i> Thông Tin Hóa Đơn
+                    </div>
+
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <h6 class="text-muted mb-2">Số Hóa Đơn</h6>
+                            <p>
+                                <strong>@Model.Invoice?.InvoiceNumber</strong>
+                                <a asp-controller="Invoice" asp-action="Details"
+                                   asp-route-id="@Model.InvoiceId" class="ms-2" title="Xem chi tiết hóa đơn">
+                                    <i class="fas fa-external-link-alt"></i>
+                                </a>
+                            </p>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="text-muted mb-2">Khách Hàng</h6>
+                            <p><strong>@Model.Invoice?.Customer?.CustomerName</strong></p>
+                        </div>
+                    </div>
+
+                    <!-- Amount Info -->
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <h6 class="text-muted mb-2">Tổng Tiền Hóa Đơn</h6>
+                            <p><strong class="fs-5">@Model.Invoice?.TotalAmount.ToString("C")</strong></p>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="text-muted mb-2">Số Tiền Thanh Toán</h6>
+                            <p><strong class="fs-5 text-success">@Model.Amount.ToString("C")</strong></p>
+                        </div>
+                    </div>
+
+                    <hr />
+
+                    <!-- Payment Details -->
+                    <div class="section-header mb-3">
+                        <i class="fas fa-credit-card"></i> Thông Tin Thanh Toán
+                    </div>
+
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <h6 class="text-muted mb-2">Phương Thức</h6>
+                            <p>
+                                <strong>
+                                    <i class="fas fa-@GetPaymentMethodIcon(Model.PaymentMethod)"></i>
+                                    @Model.PaymentMethod
+                                </strong>
+                            </p>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="text-muted mb-2">Mã Giao Dịch</h6>
+                            <p>
+                                @if (!string.IsNullOrEmpty(Model.TransactionId))
+                                {
+                                    <code>@Model.TransactionId</code>
+                                }
+                                else
+                                {
+                                    <span class="text-muted">Không có</span>
+                                }
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Bank Info (if available) -->
+                    @if (!string.IsNullOrEmpty(Model.BankName) || !string.IsNullOrEmpty(Model.BankAccountNumber))
+                    {
+                        <div class="border-top pt-4 mt-4">
+                            <h6 class="text-muted mb-3"><i class="fas fa-university"></i> Thông Tin Ngân Hàng</h6>
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <h6 class="text-muted mb-2">Tên Ngân Hàng</h6>
+                                    <p>@(Model.BankName ?? "Không có")</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <h6 class="text-muted mb-2">Số Tài Khoản</h6>
+                                    <p><code>@(Model.BankAccountNumber ?? "Không có")</code></p>
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-md-12">
+                                    <h6 class="text-muted mb-2">Tên Chủ Tài Khoản</h6>
+                                    <p>@(Model.BankAccountName ?? "Không có")</p>
+                                </div>
+                            </div>
+                        </div>
+                    }
+
+                    <!-- Notes -->
+                    @if (!string.IsNullOrEmpty(Model.Notes))
+                    {
+                        <div class="border-top pt-4 mt-4">
+                            <h6 class="text-muted mb-2">Ghi Chú</h6>
+                            <p>@Model.Notes</p>
+                        </div>
+                    }
+
+                    <hr />
+
+                    <!-- Metadata -->
+                    <div class="row text-muted small">
+                        <div class="col-md-6">
+                            <p>Tạo lúc: @Model.CreatedDate.ToString("dd/MM/yyyy HH:mm:ss")</p>
+                        </div>
+                        <div class="col-md-6">
+                            @if (Model.ModifiedDate.HasValue)
+                            {
+                                <p>Cập nhật lúc: @Model.ModifiedDate.Value.ToString("dd/MM/yyyy HH:mm:ss")</p>
+                            }
+                            @if (Model.CompletedDate.HasValue)
+                            {
+                                <p>Hoàn thành lúc: @Model.CompletedDate.Value.ToString("dd/MM/yyyy HH:mm:ss")</p>
+                            }
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="mt-4 pt-4 border-top">
+                        @if (Model.Status == "Pending")
+                        {
+                            <a asp-action="Edit" asp-route-id="@Model.PaymentId" class="btn btn-warning">
+                                <i class="fas fa-edit"></i> Chỉnh Sửa
+                            </a>
+                            <a asp-action="Delete" asp-route-id="@Model.PaymentId" class="btn btn-danger">
+                                <i class="fas fa-trash"></i> Xóa
+                            </a>
+                        }
+                        <a asp-action="Index" asp-route-invoiceId="@Model.InvoiceId" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left"></i> Quay Lại
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@functions {
+    private string GetPaymentMethodIcon(string method)
+    {
+        return method switch
+        {
+            "Tiền mặt" => "money-bill-wave",
+            "Thẻ tín dụng" => "credit-card",
+            "Chuyển khoản ngân hàng" => "university",
+            "Ví điện tử" => "wallet",
+            _ => "credit-card"
+        };
+    }
+}
+
+<style>
+    .payment-details-container {
+        padding: 30px 0;
+    }
+
+    .details-card {
+        border: none;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+    }
+
+    .section-header {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #333;
+        padding-bottom: 10px;
+        border-bottom: 2px solid #667eea;
+    }
+
+        .section-header i {
+            color: #667eea;
+            margin-right: 8px;
+        }
+
+    code {
+        background-color: #f8f9fa;
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 0.9rem;
+    }
+</style>

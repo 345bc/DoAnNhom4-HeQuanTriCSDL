@@ -1,0 +1,348 @@
+@model QlyKhachHang.Controllers.CustomerDashboardViewModel
+
+@{
+    ViewData["Title"] = "Dashboard Qu?n Lý Khách Hàng";
+}
+
+<div class="container-fluid mt-4">
+    <div class="row mb-3">
+        <div class="col-md-8">
+            <h1 class="page-title"><i class="fas fa-chart-pie"></i> Dashboard Qu?n Lý Khách Hàng</h1>
+        </div>
+        <div class="col-md-4 text-end">
+            <a asp-controller="Home" asp-action="Index" class="btn btn-secondary">
+                <i class="fas fa-home"></i> Trang Ch?
+            </a>
+        </div>
+    </div>
+
+    <!-- Th?ng kê Khách Hàng -->
+    <div class="row mb-4">
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card stat-card stat-primary">
+                <div class="card-body text-center">
+                    <i class="fas fa-users fa-2x mb-2"></i>
+                    <h5 class="card-title">T?ng Khách Hàng</h5>
+                    <h2 class="card-text">@Model.TotalCustomers</h2>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card stat-card stat-success">
+                <div class="card-body text-center">
+                    <i class="fas fa-check-circle fa-2x mb-2"></i>
+                    <h5 class="card-title">Ho?t ??ng</h5>
+                    <h2 class="card-text">@Model.ActiveCustomers</h2>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card stat-card stat-warning">
+                <div class="card-body text-center">
+                    <i class="fas fa-pause-circle fa-2x mb-2"></i>
+                    <h5 class="card-title">Không Ho?t ??ng</h5>
+                    <h2 class="card-text">@Model.InactiveCustomers</h2>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card stat-card stat-danger">
+                <div class="card-body text-center">
+                    <i class="fas fa-ban fa-2x mb-2"></i>
+                    <h5 class="card-title">B? Khóa</h5>
+                    <h2 class="card-text">@Model.BlockedCustomers</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Th?ng kê Hóa ??n -->
+    <div class="row mb-4">
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card stat-card stat-info">
+                <div class="card-body text-center">
+                    <i class="fas fa-receipt fa-2x mb-2"></i>
+                    <h5 class="card-title">T?ng Hóa ??n</h5>
+                    <h2 class="card-text">@Model.TotalInvoices</h2>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card stat-card stat-success">
+                <div class="card-body text-center">
+                    <i class="fas fa-money-bill-wave fa-2x mb-2"></i>
+                    <h5 class="card-title">?ã Thanh Toán</h5>
+                    <h2 class="card-text">@Model.PaidInvoices</h2>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card stat-card stat-warning">
+                <div class="card-body text-center">
+                    <i class="fas fa-clock fa-2x mb-2"></i>
+                    <h5 class="card-title">Ch? Thanh Toán</h5>
+                    <h2 class="card-text">@Model.PendingInvoices</h2>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card stat-card stat-secondary">
+                <div class="card-body text-center">
+                    <i class="fas fa-coins fa-2x mb-2"></i>
+                    <h5 class="card-title">Doanh Thu</h5>
+                    <h2 class="card-text">@Model.TotalRevenue.ToString("N0")</h2>
+                    <small class="text-muted">VND</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Th?ng kê ?ánh Giá -->
+    <div class="row mb-4">
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card stat-card stat-warning">
+                <div class="card-body text-center">
+                    <i class="fas fa-star fa-2x mb-2"></i>
+                    <h5 class="card-title">T?ng ?ánh Giá</h5>
+                    <h2 class="card-text">@Model.TotalReviews</h2>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card stat-card stat-success">
+                <div class="card-body text-center">
+                    <i class="fas fa-star fa-2x mb-2" style="color: gold;"></i>
+                    <h5 class="card-title">?ánh Giá Trung Bình</h5>
+                    <h2 class="card-text">@Model.AverageRating.ToString("F1")/5</h2>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card stat-card stat-info">
+                <div class="card-body text-center">
+                    <i class="fas fa-calendar-plus fa-2x mb-2"></i>
+                    <h5 class="card-title">Khách Hàng M?i (Tháng)</h5>
+                    <h2 class="card-text">@Model.NewCustomersThisMonth</h2>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card stat-card stat-secondary">
+                <div class="card-body text-center">
+                    <a href="@Url.Action("Index", "Customer")" class="text-decoration-none text-white">
+                        <i class="fas fa-user-plus fa-2x mb-2"></i>
+                        <h5 class="card-title">Qu?n Lý Khách</h5>
+                        <h2 class="card-text">?</h2>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Khách hàng m?i nh?t -->
+    <div class="row mb-4">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-clock"></i> 5 Khách Hàng M?i Nh?t</h5>
+                </div>
+                <div class="card-body p-0">
+                    @if (Model.RecentCustomers?.Any() == true)
+                    {
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Tên</th>
+                                    <th>Email</th>
+                                    <th>?i?n Tho?i</th>
+                                    <th>Ngày T?o</th>
+                                    <th>Tr?ng Thái</th>
+                                    <th>Hành ??ng</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var customer in Model.RecentCustomers)
+                                {
+                                    <tr>
+                                        <td><strong>@customer.CustomerName</strong></td>
+                                        <td>@customer.Email</td>
+                                        <td>@customer.Phone</td>
+                                        <td>@customer.CreatedDate.ToString("dd/MM/yyyy")</td>
+                                        <td>
+                                            <span class="badge @(customer.Status == "Active" ? "bg-success" : "bg-warning")">
+                                                @customer.Status
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <a asp-controller="Customer" asp-action="Details" asp-route-id="@customer.CustomerId" class="btn btn-sm btn-info">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    }
+                    else
+                    {
+                        <p class="p-3 text-muted">Ch?a có khách hàng nào</p>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Khách hàng có giá tr? cao nh?t -->
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0"><i class="fas fa-crown"></i> Top 5 Khách Hàng Giá Tr? Cao</h5>
+                </div>
+                <div class="card-body p-0">
+                    @if (Model.TopValuedCustomers?.Any() == true)
+                    {
+                        <ul class="list-group list-group-flush">
+                            @foreach (dynamic item in Model.TopValuedCustomers)
+                            {
+                                <li class="list-group-item">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <strong>@item.Customer.CustomerName</strong>
+                                            <br>
+                                            <small class="text-muted">@item.OrderCount ??n hàng</small>
+                                        </div>
+                                        <span class="badge bg-success">@((decimal)item.TotalSpent).ToString("N0")</span>
+                                    </div>
+                                </li>
+                            }
+                        </ul>
+                    }
+                    else
+                    {
+                        <p class="p-3 text-muted">Ch?a có d? li?u</p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ?ánh giá tích c?c nh?t -->
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="card">
+                <div class="card-header bg-warning text-dark">
+                    <h5 class="mb-0"><i class="fas fa-star"></i> Top 5 Ng??i ?ánh Giá Nhi?u Nh?t</h5>
+                </div>
+                <div class="card-body p-0">
+                    @if (Model.MostActiveReviewers?.Any() == true)
+                    {
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Tên Khách Hàng</th>
+                                    <th>S? ?ánh Giá</th>
+                                    <th>?ánh Giá Trung Bình</th>
+                                    <th>Hành ??ng</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (dynamic item in Model.MostActiveReviewers)
+                                {
+                                    <tr>
+                                        <td><strong>@item.Customer.CustomerName</strong></td>
+                                        <td>@item.ReviewCount</td>
+                                        <td>
+                                            <span class="badge bg-warning">? @((decimal)item.AverageRating).ToString("F1")/5</span>
+                                        </td>
+                                        <td>
+                                            <a asp-controller="Customer" asp-action="Details" asp-route-id="@item.Customer.CustomerId" class="btn btn-sm btn-info">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    }
+                    else
+                    {
+                        <p class="p-3 text-muted">Ch?a có d? li?u</p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .stat-card {
+        border: none;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .stat-card.stat-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .stat-card.stat-success {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+        }
+
+        .stat-card.stat-warning {
+            background: linear-gradient(135deg, #ffc107 0%, #ff6c00 100%);
+            color: white;
+        }
+
+        .stat-card.stat-danger {
+            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+            color: white;
+        }
+
+        .stat-card.stat-info {
+            background: linear-gradient(135deg, #17a2b8 0%, #117a8b 100%);
+            color: white;
+        }
+
+        .stat-card.stat-secondary {
+            background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%);
+            color: white;
+        }
+
+        .stat-card i {
+            opacity: 0.8;
+        }
+
+    .card {
+        border: none;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+    }
+
+    .card-header {
+        border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    }
+
+    .page-title {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #333;
+        border-bottom: 3px solid #667eea;
+        padding-bottom: 15px;
+    }
+</style>

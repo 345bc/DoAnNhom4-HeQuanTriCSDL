@@ -1,0 +1,191 @@
+@model IEnumerable<QlyKhachHang.Models.CustomerContact>
+
+@{
+    ViewData["Title"] = "Qu?n Lý Liên H? Khách Hàng";
+}
+
+<div class="row mb-3">
+    <div class="col-md-8">
+        <h2 class="page-title"><i class="fas fa-address-card"></i> @ViewData["Title"]</h2>
+    </div>
+    <div class="col-md-4 text-end">
+        <a asp-controller="Customer" asp-action="Index" class="btn btn-secondary">
+            <i class="fas fa-users"></i> Qu?n Lý Khách Hàng
+        </a>
+    </div>
+</div>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="fas fa-check-circle"></i> @TempData["Success"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="fas fa-exclamation-circle"></i> @TempData["Error"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+@if (Model.Any())
+{
+    <div class="card">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">
+                <i class="fas fa-list"></i> Danh Sách Liên H?
+                <span class="badge bg-light text-dark float-end">@Model.Count() liên h?</span>
+            </h5>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Khách Hàng</th>
+                            <th>Tên Liên H?</th>
+                            <th>M?i Quan H?</th>
+                            <th>S? ?i?n Tho?i</th>
+                            <th>Email</th>
+                            <th>Lo?i</th>
+                            <th>?u Tiên</th>
+                            <th class="text-center">Thao Tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>@item.ContactId</td>
+                                <td>
+                                    <a asp-controller="Customer" asp-action="Details" asp-route-id="@item.CustomerId">
+                                        <i class="fas fa-user"></i> @item.Customer.CustomerName
+                                    </a>
+                                </td>
+                                <td><strong>@item.ContactName</strong></td>
+                                <td>
+                                    @switch (item.Relationship)
+                                    {
+                                        case "Parent":
+                                            <span class="badge bg-info">????? Cha/M?</span>
+                                            break;
+                                        case "Sibling":
+                                            <span class="badge bg-secondary">?? Anh/Ch?/Em</span>
+                                            break;
+                                        case "Friend":
+                                            <span class="badge bg-warning">?? B?n Bè</span>
+                                            break;
+                                        case "Colleague":
+                                            <span class="badge bg-primary">?? ??ng Nghi?p</span>
+                                            break;
+                                        case "Spouse":
+                                            <span class="badge bg-danger">?? V?/Ch?ng</span>
+                                            break;
+                                        default:
+                                            <span class="badge bg-secondary">@item.Relationship</span>
+                                            break;
+                                    }
+                                </td>
+                                <td>
+                                    @if (!string.IsNullOrEmpty(item.PhoneNumber))
+                                    {
+                                        <a href="tel:@item.PhoneNumber">
+                                            <i class="fas fa-phone"></i> @item.PhoneNumber
+                                        </a>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">-</span>
+                                    }
+                                </td>
+                                <td>
+                                    @if (!string.IsNullOrEmpty(item.EmailAddress))
+                                    {
+                                        <a href="mailto:@item.EmailAddress">
+                                            <i class="fas fa-envelope"></i> @item.EmailAddress
+                                        </a>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">-</span>
+                                    }
+                                </td>
+                                <td>
+                                    @switch (item.ContactType)
+                                    {
+                                        case "Primary":
+                                            <span class="badge bg-success">Chính</span>
+                                            break;
+                                        case "Secondary":
+                                            <span class="badge bg-info">Ph?</span>
+                                            break;
+                                        case "Emergency":
+                                            <span class="badge bg-danger">Kh?n C?p</span>
+                                            break;
+                                        default:
+                                            <span class="badge bg-secondary">@item.ContactType</span>
+                                            break;
+                                    }
+                                </td>
+                                <td class="text-center">
+                                    @if (item.IsPreferred)
+                                    {
+                                        <i class="fas fa-star text-warning" title="?u tiên"></i>
+                                    }
+                                    else
+                                    {
+                                        <i class="far fa-star text-muted"></i>
+                                    }
+                                </td>
+                                <td class="text-center">
+                                    <a asp-action="Edit" asp-route-id="@item.ContactId" class="btn btn-warning btn-sm btn-action">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <form asp-action="Delete" asp-route-id="@item.ContactId" method="post" class="d-inline" 
+                                          onsubmit="return confirm('B?n có ch?c mu?n xóa liên h? này?')">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="btn btn-danger btn-sm btn-action">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <div class="alert alert-info">
+        <i class="fas fa-info-circle"></i> 
+        Ch?a có liên h? nào. Vui lòng vào <a asp-controller="Customer" asp-action="Index">Qu?n Lý Khách Hàng</a> 
+        và ch?n khách hàng ?? thêm liên h?.
+    </div>
+}
+
+<style>
+    .page-title {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #333;
+        border-bottom: 3px solid #667eea;
+        padding-bottom: 15px;
+        margin-bottom: 20px;
+    }
+
+    .btn-action {
+        padding: 5px 10px;
+        margin: 2px;
+    }
+
+    .table td {
+        vertical-align: middle;
+    }
+</style>

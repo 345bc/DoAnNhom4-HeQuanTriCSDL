@@ -1,0 +1,311 @@
+@model QlyKhachHang.Models.Cart
+
+@{
+    ViewData["Title"] = "Chi Ti?t Gi? Hàng";
+    var totalAmount = Model.CartItems.Sum(ci => ci.Quantity * ci.UnitPrice);
+}
+
+<div class="cart-details-container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="page-title mb-0">
+                    <i class="fas fa-shopping-cart"></i> Chi Ti?t Gi? Hàng #@Model.CartId
+                </h2>
+                <div>
+                    <a asp-action="Index" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left"></i> Quay L?i
+                    </a>
+                    @if (Model.CartItems.Any())
+                    {
+                        <a asp-action="Checkout" asp-route-id="@Model.CartId" class="btn btn-success btn-lg">
+                            <i class="fas fa-credit-card"></i> Thanh Toán Ngay
+                        </a>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Customer Information Card -->
+        <div class="col-md-4 mb-4">
+            <div class="card customer-info-card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-user"></i> Thông Tin Khách Hàng</h5>
+                </div>
+                <div class="card-body">
+                    <dl class="row mb-0">
+                        <dt class="col-sm-5">Tên:</dt>
+                        <dd class="col-sm-7">@Model.Customer.CustomerName</dd>
+
+                        <dt class="col-sm-5">Email:</dt>
+                        <dd class="col-sm-7">@Model.Customer.Email</dd>
+
+                        <dt class="col-sm-5">S? ?T:</dt>
+                        <dd class="col-sm-7">@Model.Customer.Phone</dd>
+
+                        <dt class="col-sm-5">??a ch?:</dt>
+                        <dd class="col-sm-7">@Model.Customer.Address</dd>
+
+                        <dt class="col-sm-5">Thành ph?:</dt>
+                        <dd class="col-sm-7">@Model.Customer.City</dd>
+
+                        <dt class="col-sm-5">Tr?ng thái:</dt>
+                        <dd class="col-sm-7">
+                            @if (Model.Customer.Status == "Active")
+                            {
+                                <span class="badge bg-success">Ho?t ??ng</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-secondary">@Model.Customer.Status</span>
+                            }
+                        </dd>
+                    </dl>
+                </div>
+            </div>
+
+            <!-- Cart Summary Card -->
+            <div class="card cart-summary-card mt-3">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0"><i class="fas fa-file-invoice-dollar"></i> Tóm T?t ??n Hàng</h5>
+                </div>
+                <div class="card-body">
+                    <div class="summary-row">
+                        <span>S? l??ng s?n ph?m:</span>
+                        <strong>@Model.CartItems.Count</strong>
+                    </div>
+                    <div class="summary-row">
+                        <span>T?ng s? món:</span>
+                        <strong>@Model.CartItems.Sum(ci => ci.Quantity)</strong>
+                    </div>
+                    <hr />
+                    <div class="summary-row">
+                        <span>T?m tính:</span>
+                        <strong>@totalAmount.ToString("N0") VN?</strong>
+                    </div>
+                    <div class="summary-row">
+                        <span>Phí v?n chuy?n:</span>
+                        <strong>30,000 VN?</strong>
+                    </div>
+                    <hr />
+                    <div class="summary-row total-row">
+                        <span>T?ng c?ng:</span>
+                        <strong class="text-primary">@((totalAmount + 30000).ToString("N0")) VN?</strong>
+                    </div>
+
+                    @if (Model.CartItems.Any())
+                    {
+                        <div class="d-grid gap-2 mt-3">
+                            <a asp-action="Checkout" asp-route-id="@Model.CartId" class="btn btn-success btn-lg">
+                                <i class="fas fa-check-circle"></i> Ti?n Hành Thanh Toán
+                            </a>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Cart Items List -->
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-box"></i> S?n Ph?m Trong Gi?
+                        <span class="badge bg-light text-dark float-end">@Model.CartItems.Count s?n ph?m</span>
+                    </h5>
+                </div>
+                <div class="card-body p-0">
+                    @if (Model.CartItems.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>STT</th>
+                                        <th>S?n Ph?m</th>
+                                        <th class="text-center">S? L??ng</th>
+                                        <th class="text-end">??n Giá</th>
+                                        <th class="text-end">Thành Ti?n</th>
+                                        <th class="text-center">Thao Tác</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @{
+                                        var index = 1;
+                                        foreach (var item in Model.CartItems)
+                                        {
+                                            var lineTotal = item.Quantity * item.UnitPrice;
+                                            <tr>
+                                                <td>@index</td>
+                                                <td>
+                                                    <div class="product-info">
+                                                        <strong>@item.Product.ProductName</strong>
+                                                        <br />
+                                                        <small class="text-muted">
+                                                            <i class="fas fa-tag"></i> @item.Product.Category
+                                                        </small>
+                                                        @if (item.Product.Stock < item.Quantity)
+                                                        {
+                                                            <br />
+                                                            <span class="badge bg-danger">Không ?? t?n kho</span>
+                                                        }
+                                                    </div>
+                                                </td>
+                                                <td class="text-center">
+                                                    <span class="badge bg-primary">@item.Quantity</span>
+                                                </td>
+                                                <td class="text-end">@item.UnitPrice.ToString("N0") VN?</td>
+                                                <td class="text-end">
+                                                    <strong class="text-success">@lineTotal.ToString("N0") VN?</strong>
+                                                </td>
+                                                <td class="text-center">
+                                                    <a href="@Url.Action("Details", "Product", new { id = item.ProductId })" 
+                                                       class="btn btn-sm btn-info" title="Xem s?n ph?m">
+                                                        <i class="fas fa-eye"></i>
+                                                    </a>
+                                                    <a href="@Url.Action("Delete", "CartItem", new { id = item.CartItemId })" 
+                                                       class="btn btn-sm btn-danger" title="Xóa">
+                                                        <i class="fas fa-trash"></i>
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                            index++;
+                                        }
+                                    }
+                                </tbody>
+                                <tfoot class="table-light">
+                                    <tr>
+                                        <td colspan="4" class="text-end"><strong>T?ng c?ng:</strong></td>
+                                        <td class="text-end">
+                                            <strong class="text-primary fs-5">@totalAmount.ToString("N0") VN?</strong>
+                                        </td>
+                                        <td></td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="empty-cart text-center py-5">
+                            <i class="fas fa-shopping-cart fa-5x text-muted mb-3"></i>
+                            <h4 class="text-muted">Gi? hàng tr?ng</h4>
+                            <p class="text-muted">Ch?a có s?n ph?m nào trong gi? hàng</p>
+                            <a asp-controller="Product" asp-action="Index" class="btn btn-primary">
+                                <i class="fas fa-shopping-bag"></i> Ti?p T?c Mua S?m
+                            </a>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <!-- Cart Metadata -->
+            <div class="card mt-3">
+                <div class="card-body">
+                    <h6><i class="fas fa-info-circle"></i> Thông Tin Gi? Hàng</h6>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p class="mb-1">
+                                <strong>Mã gi? hàng:</strong> #@Model.CartId
+                            </p>
+                            <p class="mb-1">
+                                <strong>Ngày t?o:</strong> @Model.CreatedDate.ToString("dd/MM/yyyy HH:mm")
+                            </p>
+                        </div>
+                        <div class="col-md-6">
+                            @if (Model.ModifiedDate.HasValue)
+                            {
+                                <p class="mb-1">
+                                    <strong>C?p nh?t l?n cu?i:</strong> @Model.ModifiedDate.Value.ToString("dd/MM/yyyy HH:mm")
+                                </p>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .cart-details-container {
+        padding: 20px 0;
+    }
+
+    .page-title {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #333;
+    }
+
+    .card {
+        border: none;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        margin-bottom: 20px;
+    }
+
+    .customer-info-card .card-body dl dt {
+        font-weight: 600;
+        color: #666;
+    }
+
+    .customer-info-card .card-body dl dd {
+        color: #333;
+    }
+
+    .cart-summary-card .summary-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 8px 0;
+    }
+
+    .cart-summary-card .total-row {
+        font-size: 1.2rem;
+        padding-top: 10px;
+    }
+
+    .product-info strong {
+        display: block;
+        margin-bottom: 5px;
+    }
+
+    .table td, .table th {
+        vertical-align: middle;
+    }
+
+    .empty-cart {
+        padding: 60px 20px;
+    }
+
+    .btn-success {
+        background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+        border: none;
+        font-weight: 600;
+    }
+
+    .btn-success:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(67, 233, 123, 0.4);
+    }
+
+    @@media (max-width: 768px) {
+        .table-responsive {
+            font-size: 0.85rem;
+        }
+    }
+</style>
+
+@section Scripts {
+    <script>
+        // Confirmation before deleting item
+        document.querySelectorAll('.btn-danger').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                if (!confirm('B?n có ch?c mu?n xóa s?n ph?m này kh?i gi? hàng?')) {
+                    e.preventDefault();
+                }
+            });
+        });
+    </script>
+}

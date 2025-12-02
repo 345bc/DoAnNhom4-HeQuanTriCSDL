@@ -1,0 +1,377 @@
+@model RegisterViewModel
+
+@{
+    ViewData["Title"] = "??ng Ký";
+    Layout = "~/Views/Shared/_AuthLayout.cshtml";
+}
+
+@section Head {
+    <meta charset="utf-8" />
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding: 20px;
+        }
+
+        .register-container {
+            width: 100%;
+            max-width: 450px;
+        }
+
+        .register-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            padding: 40px;
+            animation: slideUp 0.5s ease-out;
+        }
+
+        @@keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .register-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .register-header h1 {
+            color: #333;
+            font-size: 28px;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .register-header p {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .logo-icon {
+            width: 60px;
+            height: 60px;
+            margin: 0 auto 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 32px;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            box-sizing: border-box;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .password-group {
+            position: relative;
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 12px;
+            top: 38px;
+            cursor: pointer;
+            color: #999;
+            font-size: 18px;
+            transition: color 0.3s ease;
+        }
+
+        .password-toggle:hover {
+            color: #667eea;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .btn-register {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: 10px;
+        }
+
+        .btn-register:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .error-message {
+            background: #fee;
+            color: #c33;
+            padding: 12px 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            border-left: 4px solid #c33;
+        }
+
+        .validation-error {
+            color: #c33;
+            font-size: 13px;
+            margin-top: 5px;
+        }
+
+        .login-link {
+            text-align: center;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .login-link p {
+            color: #666;
+            font-size: 14px;
+            margin: 0;
+        }
+
+        .login-link a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s ease;
+        }
+
+        .login-link a:hover {
+            color: #764ba2;
+        }
+
+        .success-message {
+            background: #efe;
+            color: #3c3;
+            padding: 12px 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            border-left: 4px solid #3c3;
+        }
+    </style>
+}
+
+<div class="register-container">
+    <div class="register-card">
+        <div class="register-header">
+            <div class="logo-icon">
+                <i class="fas fa-user-plus"></i>
+            </div>
+            <h1>T?o Tài Kho?n</h1>
+            <p>H? Th?ng Qu?n Lý Khách Hàng</p>
+        </div>
+
+        @if (TempData["Success"] != null)
+        {
+            <div class="success-message">
+                <i class="fas fa-check-circle"></i> @TempData["Success"]
+            </div>
+        }
+
+        @if (!ViewData.ModelState.IsValid && ViewData.ModelState.Values.Any(v => v.Errors.Count > 0))
+        {
+            <div class="error-message">
+                <i class="fas fa-exclamation-circle"></i>
+                @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                {
+                    <div>@error.ErrorMessage</div>
+                }
+            </div>
+        }
+
+        <form method="post" asp-action="Register" novalidate>
+            <div asp-validation-summary="ModelOnly"></div>
+
+            <div class="form-group">
+                <label for="Email">
+                    <i class="fas fa-envelope"></i> Email *
+                </label>
+                <input type="email" 
+                       class="form-control @(ViewData.ModelState["Email"]?.Errors.Count > 0 ? "is-invalid" : "")"
+                       id="Email" 
+                       name="Email" 
+                       placeholder="your@email.com"
+                       value="@Model?.Email"
+                       required />
+                <div asp-validation-for="Email" class="validation-error"></div>
+            </div>
+
+            <div class="form-group">
+                <label for="Username">
+                    <i class="fas fa-user"></i> Tên ??ng Nh?p *
+                </label>
+                <input type="text" 
+                       class="form-control @(ViewData.ModelState["Username"]?.Errors.Count > 0 ? "is-invalid" : "")"
+                       id="Username" 
+                       name="Username" 
+                       placeholder="Tên ??ng nh?p"
+                       value="@Model?.Username"
+                       required />
+                <div asp-validation-for="Username" class="validation-error"></div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="FirstName">
+                        <i class="fas fa-user"></i> Tên *
+                    </label>
+                    <input type="text" 
+                           class="form-control @(ViewData.ModelState["FirstName"]?.Errors.Count > 0 ? "is-invalid" : "")"
+                           id="FirstName" 
+                           name="FirstName" 
+                           placeholder="Tên"
+                           value="@Model?.FirstName"
+                           required />
+                    <div asp-validation-for="FirstName" class="validation-error"></div>
+                </div>
+
+                <div class="form-group">
+                    <label for="LastName">
+                        <i class="fas fa-user"></i> H? *
+                    </label>
+                    <input type="text" 
+                           class="form-control @(ViewData.ModelState["LastName"]?.Errors.Count > 0 ? "is-invalid" : "")"
+                           id="LastName" 
+                           name="LastName" 
+                           placeholder="H?"
+                           value="@Model?.LastName"
+                           required />
+                    <div asp-validation-for="LastName" class="validation-error"></div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="PhoneNumber">
+                    <i class="fas fa-phone"></i> S? ?i?n Tho?i
+                </label>
+                <input type="tel" 
+                       class="form-control"
+                       id="PhoneNumber" 
+                       name="PhoneNumber" 
+                       placeholder="0123456789"
+                       value="@Model?.PhoneNumber" />
+            </div>
+
+            <div class="form-group">
+                <label for="Address">
+                    <i class="fas fa-map-marker-alt"></i> ??a Ch?
+                </label>
+                <input type="text" 
+                       class="form-control"
+                       id="Address" 
+                       name="Address" 
+                       placeholder="??a ch?"
+                       value="@Model?.Address" />
+            </div>
+
+            <div class="form-group password-group">
+                <label for="Password">
+                    <i class="fas fa-lock"></i> M?t Kh?u *
+                </label>
+                <input type="password" 
+                       class="form-control @(ViewData.ModelState["Password"]?.Errors.Count > 0 ? "is-invalid" : "")"
+                       id="Password" 
+                       name="Password" 
+                       placeholder="T?i thi?u 6 ký t?"
+                       required />
+                <span class="password-toggle" onclick="togglePassword('Password', 'passwordIcon')">
+                    <i class="fas fa-eye" id="passwordIcon"></i>
+                </span>
+                <div asp-validation-for="Password" class="validation-error"></div>
+            </div>
+
+            <div class="form-group password-group">
+                <label for="ConfirmPassword">
+                    <i class="fas fa-lock"></i> Xác Nh?n M?t Kh?u *
+                </label>
+                <input type="password" 
+                       class="form-control @(ViewData.ModelState["ConfirmPassword"]?.Errors.Count > 0 ? "is-invalid" : "")"
+                       id="ConfirmPassword" 
+                       name="ConfirmPassword" 
+                       placeholder="Xác nh?n m?t kh?u"
+                       required />
+                <span class="password-toggle" onclick="togglePassword('ConfirmPassword', 'confirmPasswordIcon')">
+                    <i class="fas fa-eye" id="confirmPasswordIcon"></i>
+                </span>
+                <div asp-validation-for="ConfirmPassword" class="validation-error"></div>
+            </div>
+
+            <button type="submit" class="btn-register">
+                <i class="fas fa-user-plus"></i> ??ng Ký
+            </button>
+        </form>
+
+        <div class="login-link">
+            <p>?ã có tài kho?n? <a asp-action="Login">??ng nh?p ngay</a></p>
+        </div>
+    </div>
+</div>
+
+<script>
+    function togglePassword(inputId, iconId) {
+        const input = document.getElementById(inputId);
+        const icon = document.getElementById(iconId);
+        
+        if (input.type === 'password') {
+            input.type = 'text';
+            icon.classList.remove('fa-eye');
+            icon.classList.add('fa-eye-slash');
+        } else {
+            input.type = 'password';
+            icon.classList.remove('fa-eye-slash');
+            icon.classList.add('fa-eye');
+        }
+    }
+</script>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
