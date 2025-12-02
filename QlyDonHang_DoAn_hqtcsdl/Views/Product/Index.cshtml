@@ -1,0 +1,103 @@
+﻿@model IEnumerable<QlyDonHang_DoAn_hqtcsdl.Models.Product>
+
+@{
+    ViewBag.Title = "Sản phẩm";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    /* Định nghĩa chung cho bảng Dark Mode */
+    .table-cyber-dark {
+        --bs-table-bg: #0b1221;
+        --bs-table-color: #e2e8f0;
+        --bs-table-hover-bg: rgba(255, 255, 255, 0.05);
+        --bs-table-hover-color: #e2e8f0;
+        --bs-table-border-color: rgba(255, 255, 255, 0.1);
+        background-color: #0b1221 !important;
+        border-color: rgba(255, 255, 255, 0.1) !important;
+    }
+
+        /* Header (tiêu đề cột) */
+        .table-cyber-dark thead th {
+            background-color: #151e32 !important;
+            color: #ccff00 !important; /* Màu neon cho tiêu đề */
+            border-bottom: 2px solid #7c3aed !important;
+            box-shadow: none !important;
+            text-transform: uppercase;
+        }
+
+        /* Body (nội dung) */
+        .table-cyber-dark tbody td {
+            background-color: #0b1221 !important;
+            color: #e2e8f0 !important;
+            vertical-align: middle;
+        }
+
+    /* Tùy chỉnh nút thao tác */
+    .btn-outline-action {
+        color: #ffcc00 !important; /* Màu vàng cam nổi bật */
+        border-color: #ffcc00 !important;
+    }
+
+        .btn-outline-action:hover {
+            background-color: #ffcc00 !important;
+            color: #000 !important;
+            box-shadow: 0 0 8px rgba(255, 204, 0, 0.5);
+        }
+</style>
+
+<div class="d-flex justify-content-between align-items-center mb-4 mt-3">
+    <h2 class="text-white fw-bold" style="text-shadow: 0 0 10px rgba(255, 204, 0, 0.5);">
+        <i class="fas fa-tshirt me-2 text-warning"></i>KHO SẢN PHẨM
+    </h2>
+</div>
+
+<div class="cyber-card p-0 table-responsive" style="background-color: #0b1221; border: 1px solid rgba(255,255,255,0.1);">
+
+    <table class="table table-hover mb-0 w-100 align-middle table-cyber-dark">
+        <thead>
+            <tr>
+                <th class="ps-4">ID</th>
+                <th>Hình Ảnh</th>
+                <th>Tên Sản Phẩm</th>
+                <th>Giá Bán</th>
+                <th>Tồn Kho</th>
+                <th class="text-end pe-4">Thao Tác</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td class="ps-4 text-secondary">@item.Product_Id</td>
+                    <td>
+                        <div style="width: 50px; height: 50px; background: #151e32; border: 1px solid #4a4a7a; display:flex; align-items:center; justify-content:center;">
+                            <i class="fas fa-image text-muted"></i>
+                        </div>
+                    </td>
+                    <td class="fw-bold text-white">@item.ProductName</td>
+                    <td class="text-info fw-bold">@string.Format("{0:N0}", item.Price) ₫</td>
+                    <td>
+                        @if (item.Quantity > 10)
+                        {
+                            <span class="text-success fw-bold">@item.Quantity</span>
+                        }
+                        else if (item.Quantity > 0)
+                        {
+                            <span class="text-warning fw-bold">@item.Quantity (Sắp hết)</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-danger">Hết hàng</span>
+                        }
+                    </td>
+                    <td class="text-end pe-4">
+                        <a href="#" class="btn btn-sm btn-outline-action" title="Chỉnh sửa">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

@@ -1,0 +1,55 @@
+﻿@model QlyDonHang_DoAn_hqtcsdl.Models.OrderDetailViewModel
+
+<div class="row mb-3">
+    <div class="col-md-6">
+        <h6 class="text-secondary text-uppercase">Thông tin chung</h6>
+        <p class="mb-1"><strong>Mã ĐH:</strong> <span class="text-info">@Model.OrderNo</span></p>
+        <p class="mb-1"><strong>Ngày đặt:</strong> @Model.OrderDate.ToString("dd/MM/yyyy HH:mm")</p>
+        <p class="mb-1">
+            <strong>Trạng thái:</strong>
+            @if (Model.Status.Contains("Hủy"))
+            {<span class="badge bg-danger">@Model.Status</span> }
+        else
+        { <span class="badge bg-info text-dark">@Model.Status</span>}
+        </p>
+    </div>
+    <div class="col-md-6 text-end text-md-start">
+        <h6 class="text-secondary text-uppercase">Người nhận</h6>
+        <p class="mb-1"><strong>Tên:</strong> @Model.CustomerName</p>
+        <p class="mb-1"><strong>SĐT:</strong> @Model.ShippingPhone</p>
+        <p class="mb-1"><strong>Địa chỉ:</strong> @Model.ShippingAddress</p>
+    </div>
+</div>
+
+<div class="table-responsive border border-secondary rounded">
+    <table class="table table-dark table-striped mb-0">
+        <thead>
+            <tr>
+                <th>Sản phẩm</th>
+                <th class="text-center">SL</th>
+                <th class="text-end">Đơn giá</th>
+                <th class="text-end">Thành tiền</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.Items)
+            {
+                <tr>
+                    <td>
+                        <div class="fw-bold">@item.ProductName</div>
+                        <small class="text-muted">Size: @item.SizeName | Màu: @item.ColorName</small>
+                    </td>
+                    <td class="text-center align-middle">@item.Quantity</td>
+                    <td class="text-end align-middle">@item.UnitPrice.ToString("N0")</td>
+                    <td class="text-end align-middle text-info">@item.TotalPrice.ToString("N0")</td>
+                </tr>
+            }
+        </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="3" class="text-end fw-bold">Tổng cộng:</td>
+                <td class="text-end fw-bold text-warning fs-5">@Model.TotalAmount.ToString("N0") ₫</td>
+            </tr>
+        </tfoot>
+    </table>
+</div>

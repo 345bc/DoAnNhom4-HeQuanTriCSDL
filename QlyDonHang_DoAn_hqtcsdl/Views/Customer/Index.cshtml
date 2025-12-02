@@ -1,0 +1,116 @@
+﻿@model IEnumerable<QlyDonHang_DoAn_hqtcsdl.Models.KhachHang>
+
+@{
+    ViewBag.Title = "Khách hàng";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<!-- Style riêng để ép bảng về màu tối -->
+<style>
+    .table-cyber-dark {
+        --bs-table-bg: #0b1221;
+        --bs-table-color: #e2e8f0;
+        --bs-table-hover-bg: rgba(255, 255, 255, 0.05);
+        --bs-table-hover-color: #e2e8f0;
+        --bs-table-border-color: rgba(255, 255, 255, 0.1);
+        background-color: #0b1221 !important;
+        border-color: rgba(255, 255, 255, 0.1) !important;
+    }
+
+        .table-cyber-dark thead th {
+            background-color: #151e32 !important;
+            color: #ccff00 !important;
+            border-bottom: 2px solid #7c3aed !important;
+            box-shadow: none !important;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+        }
+
+        .table-cyber-dark tbody td {
+            background-color: #0b1221 !important;
+            color: #e2e8f0 !important;
+            vertical-align: middle;
+        }
+
+    .btn-outline-cyber {
+        color: #00f3ff !important;
+        border-color: #00f3ff !important;
+        opacity: 0.8;
+    }
+
+        .btn-outline-cyber:hover {
+            background-color: #00f3ff !important;
+            color: #000 !important;
+            opacity: 1;
+            box-shadow: 0 0 10px rgba(0, 243, 255, 0.5);
+        }
+</style>
+
+<div class="d-flex justify-content-between align-items-center mb-4 mt-3">
+    <h2 class="header-title" style="font-size: 2rem; color: #fff; text-shadow: 0 0 10px rgba(52, 211, 153, 0.5);">
+        <i class="fas fa-users me-3 text-success"></i>DANH SÁCH KHÁCH HÀNG
+    </h2>
+    <div>
+        <button class="btn btn-cyber" onclick="location.reload()">
+            <i class="fas fa-sync-alt me-2"></i>Làm mới
+        </button>
+    </div>
+</div>
+
+<div class="cyber-card p-0 table-responsive" style="background-color: #0b1221; border: 1px solid rgba(255,255,255,0.1);">
+
+    <table class="table table-hover mb-0 align-middle table-cyber-dark">
+        <thead>
+            <tr>
+                <th class="ps-4">Mã KH</th>
+                <th>Họ Tên</th>
+                <th>Email</th>
+                <th>Số ĐT</th>
+                <th>Giới Tính</th>
+                <th class="text-end pe-4">Hành Động</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model != null && Model.Any())
+            {
+                foreach (var item in Model)
+                {
+                    <tr>
+                        <td class="ps-4 text-info fw-bold">#@item.MaKH</td>
+
+                        <td class="fw-bold text-white">@item.TenKH</td>
+
+                        <td style="color: #00f3ff;">@item.Email</td>
+
+                        <td>@item.SoDT</td>
+
+                        <td>
+                            @if (item.GioiTinhKH == "Nam")
+                            {<span class="badge bg-primary bg-opacity-25 text-primary border border-primary">Nam</span> }
+                            else if (item.GioiTinhKH == "Nữ")
+                            { <span class="badge bg-danger bg-opacity-25 text-danger border border-danger">Nữ</span> }
+                            else
+                            { <span class="text-muted">@item.GioiTinhKH</span>}
+                        </td>
+
+                        <td class="text-end pe-4">
+                            <!-- LINK ĐÃ ĐƯỢC CẬP NHẬT -->
+                            <a href="@Url.Action("LichSu", "Customer", new { id = item.MaKH })" class="btn btn-sm btn-outline-cyber">
+                                <i class="fas fa-history me-1"></i> Lịch sử đơn
+                            </a>
+                        </td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="6" class="text-center py-5 text-muted">
+                        <i class="fas fa-user-slash fa-3x mb-3"></i><br />
+                        Chưa có dữ liệu khách hàng.
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
