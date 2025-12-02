@@ -1,0 +1,204 @@
+@model IEnumerable<QlyKhachHang.Models.Review>
+
+@{
+    ViewData["Title"] = "Qu?n Lý ?ánh Giá S?n Ph?m";
+}
+
+<div class="row mb-3">
+    <div class="col-md-8">
+        <h2 class="page-title"><i class="fas fa-star"></i> @ViewData["Title"]</h2>
+    </div>
+    <div class="col-md-4 text-end">
+        <a asp-action="Create" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Thêm ?ánh Giá
+        </a>
+        <a asp-controller="Home" asp-action="Index" class="btn btn-secondary">
+            <i class="fas fa-home"></i> Trang Ch?
+        </a>
+    </div>
+</div>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="fas fa-check-circle"></i> @TempData["Success"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="fas fa-exclamation-circle"></i> @TempData["Error"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+@if (Model.Any())
+{
+    <div class="card">
+        <div class="card-header bg-warning text-dark">
+            <h5 class="mb-0">
+                <i class="fas fa-list"></i> Danh Sách ?ánh Giá
+                <span class="badge bg-dark float-end">@Model.Count() ?ánh giá</span>
+            </h5>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Khách Hàng</th>
+                            <th>S?n Ph?m</th>
+                            <th class="text-center">?ánh Giá</th>
+                            <th>Bình Lu?n</th>
+                            <th>Ngày T?o</th>
+                            <th class="text-center">Thao Tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>@item.ReviewId</td>
+                                <td>
+                                    <a asp-controller="Customer" asp-action="Details" asp-route-id="@item.CustomerId">
+                                        <i class="fas fa-user"></i> @item.Customer.CustomerName
+                                    </a>
+                                </td>
+                                <td>
+                                    <a asp-controller="Product" asp-action="Details" asp-route-id="@item.ProductId">
+                                        <i class="fas fa-box"></i> @item.Product.ProductName
+                                    </a>
+                                    <br/>
+                                    <small class="text-muted">@item.Product.Category</small>
+                                </td>
+                                <td class="text-center">
+                                    @for (int i = 1; i <= 5; i++)
+                                    {
+                                        if (i <= item.Rating)
+                                        {
+                                            <i class="fas fa-star text-warning"></i>
+                                        }
+                                        else
+                                        {
+                                            <i class="far fa-star text-muted"></i>
+                                        }
+                                    }
+                                    <br/>
+                                    <small class="text-muted">(@item.Rating/5)</small>
+                                </td>
+                                <td>
+                                    <div class="comment-preview">
+                                        @if (!string.IsNullOrEmpty(item.Comment))
+                                        {
+                                            if (item.Comment.Length > 80)
+                                            {
+                                                @item.Comment.Substring(0, 80)<text>...</text>
+                                            }
+                                            else
+                                            {
+                                                @item.Comment
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">Không có bình lu?n</span>
+                                        }
+                                    </div>
+                                </td>
+                                <td>
+                                    <small>
+                                        <i class="fas fa-calendar"></i> @item.CreatedDate.ToString("dd/MM/yyyy")<br/>
+                                        <i class="fas fa-clock"></i> @item.CreatedDate.ToString("HH:mm")
+                                    </small>
+                                </td>
+                                <td class="text-center">
+                                    <a asp-action="Details" asp-route-id="@item.ReviewId" class="btn btn-info btn-sm btn-action" title="Chi ti?t">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    <a asp-action="Edit" asp-route-id="@item.ReviewId" class="btn btn-warning btn-sm btn-action" title="S?a">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <a asp-action="Delete" asp-route-id="@item.ReviewId" class="btn btn-danger btn-sm btn-action" title="Xóa">
+                                        <i class="fas fa-trash"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Statistics Card -->
+    <div class="row mt-4">
+        <div class="col-md-4">
+            <div class="card bg-light">
+                <div class="card-body text-center">
+                    <h5>T?ng ?ánh Giá</h5>
+                    <h2 class="text-primary">@Model.Count()</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card bg-light">
+                <div class="card-body text-center">
+                    <h5>?i?m Trung Bình</h5>
+                    <h2 class="text-warning">
+                        @if (Model.Any())
+                        {
+                            @Model.Average(r => r.Rating).ToString("F1")
+                            <i class="fas fa-star"></i>
+                        }
+                        else
+                        {
+                            <span>N/A</span>
+                        }
+                    </h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card bg-light">
+                <div class="card-body text-center">
+                    <h5>?ánh Giá 5 Sao</h5>
+                    <h2 class="text-success">@Model.Count(r => r.Rating == 5)</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <div class="alert alert-info">
+        <i class="fas fa-info-circle"></i>
+        Ch?a có ?ánh giá nào. <a asp-action="Create">Thêm ?ánh giá ??u tiên</a>
+    </div>
+}
+
+<style>
+    .page-title {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #333;
+        border-bottom: 3px solid #ffc107;
+        padding-bottom: 15px;
+        margin-bottom: 20px;
+    }
+
+    .btn-action {
+        padding: 5px 10px;
+        margin: 2px;
+    }
+
+    .table td {
+        vertical-align: middle;
+    }
+
+    .comment-preview {
+        max-width: 300px;
+    }
+</style>

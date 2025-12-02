@@ -1,0 +1,235 @@
+﻿@model IEnumerable<QlyKhachHang.Models.Payment>
+
+@{
+    ViewData["Title"] = "Danh Sách Thanh Toán";
+    var invoiceId = (int?)ViewData["InvoiceId"];
+    var invoiceNumber = ViewData["InvoiceNumber"]?.ToString() ?? "";
+    var totalAmount = (decimal?)ViewData["TotalAmount"] ?? 0;
+    var paidAmount = (decimal?)ViewData["PaidAmount"] ?? 0;
+    var remainingAmount = (decimal?)ViewData["RemainingAmount"] ?? 0;
+}
+
+@section Head {
+    <link rel="stylesheet" href="~/css/payment-management.css" />
+}
+
+<div class="payment-management-container">
+    <!-- Header Section -->
+    <div class="management-header mb-4">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h1 class="page-title">
+                    <i class="fas fa-credit-card"></i> Quản Lý Thanh Toán
+                </h1>
+                @if (invoiceId.HasValue)
+                {
+                    <p class="text-muted">Hóa Đơn: <strong>@invoiceNumber</strong></p>
+                    <div class="payment-summary mt-3">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="summary-box">
+                                    <div class="summary-label">Tổng Tiền</div>
+                                    <div class="summary-value">@totalAmount.ToString("C")</div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="summary-box">
+                                    <div class="summary-label">Đã Thanh Toán</div>
+                                    <div class="summary-value text-success">@paidAmount.ToString("C")</div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="summary-box">
+                                    <div class="summary-label">Còn Lại</div>
+                                    <div class="summary-value text-warning">@remainingAmount.ToString("C")</div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="summary-box">
+                                    <div class="summary-label">Tỷ Lệ</div>
+                                    <div class="summary-value">
+                                        @{
+                                            var percentage = totalAmount > 0 ? (paidAmount / totalAmount * 100) : 0;
+                                        }
+                                        @percentage.ToString("F1")%
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="progress mt-2">
+                            <div class="progress-bar" role="progressbar" style="width: @percentage%"
+                                 aria-valuenow="@percentage" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                    </div>
+                }
+            </div>
+            <div class="col-md-4 text-end">
+                <a asp-action="Create" asp-route-invoiceId="@invoiceId" class="btn btn-primary btn-lg">
+                    <i class="fas fa-plus-circle"></i> Thêm Thanh Toán
+                </a>
+                @if (invoiceId.HasValue)
+                {
+                    <a asp-controller="Invoice" asp-action="Details" asp-route-id="@invoiceId" class="btn btn-secondary btn-lg">
+                        <i class="fas fa-arrow-left"></i> Quay Lại
+                    </a>
+                }
+                else
+                {
+                    <a asp-controller="Invoice" asp-action="Index" class="btn btn-secondary btn-lg">
+                        <i class="fas fa-list"></i> Danh Sách Hóa Đơn
+                    </a>
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- Alerts -->
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="fas fa-check-circle"></i> @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="fas fa-exclamation-circle"></i> @TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @if (TempData["Warning"] != null)
+    {
+        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+            <i class="fas fa-exclamation-triangle"></i> @TempData["Warning"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <!-- Data Table -->
+    @if (Model != null && Model.Any())
+    {
+        <div class="card table-card">
+            <div class="table-responsive">
+                <table class="table table-hover payment-grid">
+                    <thead>
+                        <tr>
+                            <th style="width: 80px;">ID</th>
+                            <th>Hóa Đơn</th>
+                            <th>Phương Thức</th>
+                            <th>Số Tiền</th>
+                            <th>Mã GD</th>
+                            <th>Trạng Thái</th>
+                            <th>Ngày Thanh Toán</th>
+                            <th style="width: 180px;">Hành Động</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr class="data-row">
+                                <td>
+                                    <span class="badge bg-primary">@item.PaymentId</span>
+                                </td>
+                                <td>
+                                    <strong>@item.Invoice?.InvoiceNumber</strong>
+                                    <br>
+                                    <small class="text-muted">@item.Invoice?.Customer?.CustomerName</small>
+                                </td>
+                                <td>
+                                    <i class="fas fa-@GetPaymentMethodIcon(item.PaymentMethod)"></i>
+                                    @item.PaymentMethod
+                                </td>
+                                <td>
+                                    <span class="amount-badge">@item.Amount.ToString("C")</span>
+                                </td>
+                                <td>
+                                    @if (!string.IsNullOrEmpty(item.TransactionId))
+                                    {
+                                        <code style="font-size: 0.85em;">@item.TransactionId</code>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">-</span>
+                                    }
+                                </td>
+                                <td>
+                                    @{
+                                        string statusClass = item.Status switch
+                                        {
+                                            "Completed" => "bg-success",
+                                            "Pending" => "bg-warning",
+                                            "Failed" => "bg-danger",
+                                            "Refunded" => "bg-info",
+                                            _ => "bg-secondary"
+                                        };
+                                        string statusText = item.Status switch
+                                        {
+                                            "Completed" => "Hoàn Thành",
+                                            "Pending" => "Chờ Xác Nhận",
+                                            "Failed" => "Thất Bại",
+                                            "Refunded" => "Hoàn Lại",
+                                            _ => "Khác"
+                                        };
+                                    }
+                                    <span class="badge @statusClass">@statusText</span>
+                                </td>
+                                <td>
+                                    @item.PaymentDate.ToString("dd/MM/yyyy HH:mm")
+                                </td>
+                                <td class="text-center">
+                                    <div class="btn-group btn-group-sm" role="group">
+                                        <a asp-action="Details" asp-route-id="@item.PaymentId"
+                                           class="btn btn-info" title="Xem chi tiết">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        @if (item.Status == "Pending")
+                                        {
+                                            <a asp-action="Edit" asp-route-id="@item.PaymentId"
+                                               class="btn btn-warning" title="Chỉnh sửa">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <a asp-action="Delete" asp-route-id="@item.PaymentId"
+                                               class="btn btn-danger" title="Xóa">
+                                                <i class="fas fa-trash"></i>
+                                            </a>
+                                        }
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-info alert-lg text-center" role="alert">
+            <div class="empty-state">
+                <i class="fas fa-inbox"></i>
+                <h4>Không có thanh toán nào</h4>
+                <p class="text-muted">@(invoiceId.HasValue ? "Hóa đơn này chưa có thanh toán nào." : "Chưa có bản ghi thanh toán nào trong hệ thống.")</p>
+                <a asp-action="Create" asp-route-invoiceId="@invoiceId" class="btn btn-primary mt-3">
+                    <i class="fas fa-plus"></i> Thêm thanh toán mới
+                </a>
+            </div>
+        </div>
+    }
+</div>
+
+@functions {
+    private string GetPaymentMethodIcon(string method)
+    {
+        return method switch
+        {
+            "Tiền mặt" => "money-bill-wave",
+            "Thẻ tín dụng" => "credit-card",
+            "Chuyển khoản ngân hàng" => "university",
+            "Ví điện tử" => "wallet",
+            _ => "credit-card"
+        };
+    }
+}

@@ -1,0 +1,125 @@
+﻿@model IEnumerable<QlyDonHang_DoAn_hqtcsdl.Models.Order>
+
+@{
+    ViewBag.Title = "Lịch sử mua hàng";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<!-- Style đồng bộ giao diện tối -->
+<style>
+    .table-cyber-dark {
+        --bs-table-bg: #0b1221;
+        --bs-table-color: #e2e8f0;
+        --bs-table-hover-bg: rgba(255, 255, 255, 0.05);
+        background-color: #0b1221 !important;
+        border-color: rgba(255, 255, 255, 0.1) !important;
+    }
+
+        .table-cyber-dark thead th {
+            background-color: #151e32 !important;
+            color: #ccff00 !important;
+            border-bottom: 2px solid #7c3aed !important;
+        }
+
+        .table-cyber-dark tbody td {
+            background-color: #0b1221 !important;
+            color: #e2e8f0 !important;
+        }
+</style>
+
+<div class="d-flex justify-content-between align-items-center mb-4 mt-3">
+    <div>
+        <h2 class="header-title text-white mb-0" style="text-shadow: 0 0 10px rgba(0, 243, 255, 0.5);">
+            <i class="fas fa-history me-3 text-info"></i>LỊCH SỬ MUA HÀNG
+        </h2>
+        <div class="text-muted mt-2">
+            Khách hàng: <strong class="text-warning" style="font-size: 1.2rem;">@ViewBag.CustomerName</strong>
+        </div>
+    </div>
+    <div>
+        <a href="@Url.Action("Index", "Customer")" class="btn btn-outline-light">
+            <i class="fas fa-arrow-left me-2"></i>Quay lại
+        </a>
+    </div>
+</div>
+
+<div class="cyber-card p-0 table-responsive" style="background-color: #0b1221; border: 1px solid rgba(255,255,255,0.1);">
+    <table class="table table-hover mb-0 align-middle table-cyber-dark">
+        <thead>
+            <tr>
+                <th class="ps-4">Mã ĐH</th>
+                <th>Ngày Đặt</th>
+                <th>Tổng Tiền</th>
+                <th>Trạng Thái</th>
+                <th class="text-end pe-4">Chi Tiết</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model != null && Model.Any())
+            {
+                foreach (var item in Model)
+                {
+                    string badgeClass = "bg-secondary";
+                    string status = item.Status ?? "Mới";
+                    if (status.Contains("Hoàn thành")) { badgeClass = "bg-success"; }
+                    else if (status.Contains("Hủy")) { badgeClass = "bg-danger"; }
+                    else if (status.Contains("Giao")) { badgeClass = "bg-primary"; }
+                    else if (status.Contains("Chờ")) { badgeClass = "bg-warning text-dark"; }
+
+                    <tr>
+                        <td class="ps-4 fw-bold text-info">@item.OrderNo</td>
+                        <td>@string.Format("{0:dd/MM/yyyy HH:mm}", item.OrderDate)</td>
+                        <td class="fw-bold text-warning">@string.Format("{0:N0}", item.TotalAmount) ₫</td>
+                        <td><span class="badge @badgeClass">@status</span></td>
+                        <td class="text-end pe-4">
+                            <!-- Gọi lại hàm xem chi tiết của OrderController -->
+                            <button class="btn btn-sm btn-outline-info" onclick="loadOrderDetails(@item.Order_Id)">
+                                <i class="fas fa-eye me-1"></i> Xem
+                            </button>
+                        </td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="5" class="text-center py-5 text-muted">
+                        <i class="fas fa-shopping-basket fa-3x mb-3"></i><br />
+                        Khách hàng này chưa có đơn hàng nào.
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<!-- MODAL Chi tiết (Tái sử dụng) -->
+<div class="modal fade" id="detailModal" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content" style="background-color: #0b1221; border: 1px solid #00f3ff; box-shadow: 0 0 20px rgba(0, 243, 255, 0.2);">
+            <div class="modal-header border-secondary">
+                <h5 class="modal-title text-info fw-bold">CHI TIẾT ĐƠN HÀNG</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-0" id="detailContent">
+                <div class="text-center py-5">
+                    <div class="spinner-border text-info" role="status"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function loadOrderDetails(id) {
+            $('#detailModal').modal('show');
+            // Gọi sang OrderController để lấy PartialView chi tiết
+            $.get('@Url.Action("GetOrderDetails", "Order")/' + id, function (data) {
+                $('#detailContent').html(data);
+            }).fail(function () {
+                $('#detailContent').html('<div class="text-danger text-center p-4">Lỗi tải dữ liệu!</div>');
+            });
+        }
+    </script>
+}

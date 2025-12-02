@@ -1,0 +1,408 @@
+﻿@model Invoice
+
+@{
+    ViewData["Title"] = "Chi Tiết Hóa Đơn";
+}
+
+<div class="invoice-details-container">
+    <div class="row">
+        <div class="col-md-12">
+            <!-- Header -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="page-title">
+                    <i class="fas fa-receipt"></i> Chi Tiết Hóa Đơn
+                </h2>
+                <div>
+                    <a asp-action="Edit" asp-route-id="@Model.InvoiceId" class="btn btn-warning">
+                        <i class="fas fa-edit"></i> Chỉnh Sửa
+                    </a>
+                    <a asp-action="Index" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left"></i> Quay Lại
+                    </a>
+                </div>
+            </div>
+
+            @if (TempData["Success"] != null)
+            {
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <i class="fas fa-check-circle"></i> @TempData["Success"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            }
+
+            <!-- Invoice Card -->
+            <div class="row">
+                <!-- Left Column: Invoice Info -->
+                <div class="col-md-8">
+                    <div class="card invoice-card">
+                        <div class="card-header bg-primary text-white">
+                            <h5 class="mb-0">
+                                <i class="fas fa-file-invoice"></i> Hóa Đơn #@Model.InvoiceNumber
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <!-- Invoice Basic Info -->
+                            <div class="row mb-4">
+                                <div class="col-md-6">
+                                    <h6><i class="fas fa-info-circle"></i> Thông Tin Hóa Đơn</h6>
+                                    <table class="table table-sm table-borderless">
+                                        <tr>
+                                            <td class="text-muted">Mã Hóa Đơn:</td>
+                                            <td><strong>@Model.InvoiceNumber</strong></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-muted">Ngày Lập:</td>
+                                            <td><strong>@Model.InvoiceDate.ToString("dd/MM/yyyy")</strong></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-muted">Giờ Lập:</td>
+                                            <td><strong>@Model.InvoiceDate.ToString("HH:mm:ss")</strong></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-muted">Trạng Thái:</td>
+                                            <td>
+                                                @{
+                                                    string statusClass = Model.Status switch
+                                                    {
+                                                        "Completed" => "success",
+                                                        "Pending" => "warning",
+                                                        "Cancelled" => "danger",
+                                                        _ => "secondary"
+                                                    };
+                                                    string statusText = Model.Status switch
+                                                    {
+                                                        "Completed" => "Hoàn Thành",
+                                                        "Pending" => "Chờ Xác Nhận",
+                                                        "Cancelled" => "Đã Hủy",
+                                                        _ => Model.Status
+                                                    };
+                                                }
+                                                <span class="badge bg-@statusClass">@statusText</span>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+                                <div class="col-md-6">
+                                    <h6><i class="fas fa-user"></i> Thông Tin Khách Hàng</h6>
+                                    <table class="table table-sm table-borderless">
+                                        <tr>
+                                            <td class="text-muted">Tên:</td>
+                                            <td><strong>@Model.Customer.CustomerName</strong></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-muted">Email:</td>
+                                            <td>@Model.Customer.Email</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-muted">Điện Thoại:</td>
+                                            <td>@Model.Customer.Phone</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-muted">Địa Chỉ:</td>
+                                            <td>@Model.Customer.Address</td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <!-- Invoice Items -->
+                            <h6><i class="fas fa-shopping-cart"></i> Chi Tiết Sản Phẩm</h6>
+                            <div class="table-responsive">
+                                <table class="table table-bordered table-hover">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>#</th>
+                                            <th>Sản Phẩm</th>
+                                            <th class="text-center">Số Lượng</th>
+                                            <th class="text-end">Đơn Giá</th>
+                                            <th class="text-end">Thành Tiền</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @{
+                                            int index = 1;
+                                            decimal subTotal = 0;
+                                        }
+                                        @foreach (var detail in Model.InvoiceDetails)
+                                        {
+                                            var itemTotal = detail.Quantity * detail.UnitPrice;
+                                            subTotal += itemTotal;
+                                            <tr>
+                                                <td>@index</td>
+                                                <td>
+                                                    <strong>@detail.Product.ProductName</strong><br />
+                                                    <small class="text-muted">@detail.Product.Category</small>
+                                                </td>
+                                                <td class="text-center">@detail.Quantity</td>
+                                                <td class="text-end">@detail.UnitPrice.ToString("N0") VNĐ</td>
+                                                <td class="text-end"><strong>@itemTotal.ToString("N0") VNĐ</strong></td>
+                                            </tr>
+                                            index++;
+                                        }
+                                    </tbody>
+                                    <tfoot class="table-light">
+                                        <tr>
+                                            <td colspan="4" class="text-end"><strong>Tạm Tính:</strong></td>
+                                            <td class="text-end"><strong>@subTotal.ToString("N0") VNĐ</strong></td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="4" class="text-end"><strong>Phí Vận Chuyển:</strong></td>
+                                            <td class="text-end"><strong>30,000 VNĐ</strong></td>
+                                        </tr>
+                                        <tr class="table-primary">
+                                            <td colspan="4" class="text-end"><strong>TỔNG CỘNG:</strong></td>
+                                            <td class="text-end">
+                                                <h5 class="mb-0 text-primary">
+                                                    <strong>@Model.TotalAmount.ToString("N0") VNĐ</strong>
+                                                </h5>
+                                            </td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+
+                            <!-- Notes -->
+                            @if (!string.IsNullOrEmpty(Model.Notes))
+                            {
+                                <div class="alert alert-info">
+                                    <h6><i class="fas fa-sticky-note"></i> Ghi Chú:</h6>
+                                    <p class="mb-0">@Model.Notes</p>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column: Payment Info & Actions -->
+                <div class="col-md-4">
+                    <!-- Payment Information -->
+                    <div class="card payment-info-card mb-3">
+                        <div class="card-header bg-success text-white">
+                            <h6 class="mb-0">
+                                <i class="fas fa-credit-card"></i> Thông Tin Thanh Toán
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            @{
+                                var payment = Model.Payments?.FirstOrDefault();
+                            }
+                            @if (payment != null)
+                            {
+                                <div class="payment-detail">
+                                    <div class="payment-item">
+                                        <span class="label">Phương Thức:</span>
+                                        <span class="value">
+                                            <strong>
+                                                @switch (payment.PaymentMethod)
+                                                {
+                                                    case "Cash":
+                                                        <i class="fas fa-money-bill-wave text-success"></i>
+                                                        <text> Tiền Mặt</text>
+                                                        break;
+                                                    case "CreditCard":
+                                                        <i class="fas fa-credit-card text-primary"></i>
+                                                        <text> Thẻ Tín Dụng</text>
+                                                        break;
+                                                    case "BankTransfer":
+                                                        <i class="fas fa-university text-info"></i>
+                                                        <text> Chuyển Khoản</text>
+                                                        break;
+                                                    case "MobilePayment":
+                                                        <i class="fas fa-mobile-alt text-warning"></i>
+                                                        <text> Ví Điện Tử</text>
+                                                        break;
+                                                    default:
+                                                        @payment.PaymentMethod
+                                                        break;
+                                                }
+                                            </strong>
+                                        </span>
+                                    </div>
+                                    <div class="payment-item">
+                                        <span class="label">Ngày Tạo:</span>
+                                        <span class="value">@payment.PaymentDate.ToString("dd/MM/yyyy")</span>
+                                    </div>
+                                    <div class="payment-item">
+                                        <span class="label">Giờ Tạo:</span>
+                                        <span class="value">@payment.PaymentDate.ToString("HH:mm:ss")</span>
+                                    </div>
+                                    <div class="payment-item">
+                                        <span class="label">Trạng Thái:</span>
+                                        <span class="value">
+                                            @{
+                                                string paymentStatusClass = payment.Status switch
+                                                {
+                                                    "Completed" => "success",
+                                                    "Pending" => "warning",
+                                                    "Failed" => "danger",
+                                                    _ => "secondary"
+                                                };
+                                                string paymentStatusText = payment.Status switch
+                                                {
+                                                    "Completed" => "Đã Thanh Toán",
+                                                    "Pending" => "Chờ Thanh Toán",
+                                                    "Failed" => "Thất Bại",
+                                                    _ => payment.Status
+                                                };
+                                            }
+                                            <span class="badge bg-@paymentStatusClass">@paymentStatusText</span>
+                                        </span>
+                                    </div>
+                                    <div class="payment-item">
+                                        <span class="label">Số Tiền:</span>
+                                        <span class="value">
+                                            <strong class="text-primary">@payment.Amount.ToString("N0") VNĐ</strong>
+                                        </span>
+                                    </div>
+                                    @if (!string.IsNullOrEmpty(payment.Notes))
+                                    {
+                                        <div class="payment-item">
+                                            <span class="label">Ghi Chú:</span>
+                                            <span class="value">@payment.Notes</span>
+                                        </div>
+                                    }
+                                </div>
+                            }
+                            else
+                            {
+                                <p class="text-muted mb-0">
+                                    <i class="fas fa-info-circle"></i> Chưa có thông tin thanh toán
+                                </p>
+                            }
+                        </div>
+                    </div>
+
+                    <!-- Invoice Summary -->
+                    <div class="card summary-card mb-3">
+                        <div class="card-header">
+                            <h6 class="mb-0"><i class="fas fa-calculator"></i> Tổng Quan</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="summary-item">
+                                <span>Số Sản Phẩm:</span>
+                                <strong>@Model.InvoiceDetails.Count</strong>
+                            </div>
+                            <div class="summary-item">
+                                <span>Tổng Số Lượng:</span>
+                                <strong>@Model.InvoiceDetails.Sum(d => d.Quantity)</strong>
+                            </div>
+                            <div class="summary-item">
+                                <span>Tổng Tiền:</span>
+                                <strong class="text-primary">@Model.TotalAmount.ToString("N0") VNĐ</strong>
+                            </div>
+                            <div class="summary-item">
+                                <span>Đã Thanh Toán:</span>
+                                <strong class="text-success">@Model.PaidAmount.ToString("N0") VNĐ</strong>
+                            </div>
+                            <div class="summary-item">
+                                <span>Còn Lại:</span>
+                                <strong class="text-danger">@((Model.TotalAmount - Model.PaidAmount).ToString("N0")) VNĐ</strong>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="d-grid gap-2">
+                                <a href="javascript:window.print()" class="btn btn-primary">
+                                    <i class="fas fa-print"></i> In Hóa Đơn
+                                </a>
+                                <a asp-controller="Payment" asp-action="Create" asp-route-invoiceId="@Model.InvoiceId" class="btn btn-success">
+                                    <i class="fas fa-money-bill"></i> Thanh Toán
+                                </a>
+                                <a asp-action="Edit" asp-route-id="@Model.InvoiceId" class="btn btn-warning">
+                                    <i class="fas fa-edit"></i> Chỉnh Sửa
+                                </a>
+                                <a asp-action="Delete" asp-route-id="@Model.InvoiceId" class="btn btn-danger">
+                                    <i class="fas fa-trash"></i> Xóa
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .invoice-details-container {
+        padding: 30px 0;
+    }
+
+    .page-title {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #333;
+    }
+
+    .invoice-card, .payment-info-card, .summary-card {
+        border: none;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        border-radius: 8px;
+        margin-bottom: 20px;
+    }
+
+    .card-header {
+        border-bottom: none;
+        border-radius: 8px 8px 0 0 !important;
+        font-weight: 600;
+    }
+
+    .payment-detail {
+        font-size: 0.95rem;
+    }
+
+    .payment-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 10px 0;
+        border-bottom: 1px solid #f0f0f0;
+    }
+
+        .payment-item:last-child {
+            border-bottom: none;
+        }
+
+        .payment-item .label {
+            color: #666;
+            font-weight: 500;
+        }
+
+        .payment-item .value {
+            text-align: right;
+        }
+
+    .summary-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 8px 0;
+        border-bottom: 1px solid #f0f0f0;
+    }
+
+        .summary-item:last-child {
+            border-bottom: none;
+            padding-top: 12px;
+            margin-top: 8px;
+            border-top: 2px solid #dee2e6;
+        }
+
+    .table-hover tbody tr:hover {
+        background-color: #f8f9fa;
+    }
+
+    @@media print {
+        .btn, .card:not(.invoice-card) {
+            display: none !important;
+        }
+
+        .invoice-card {
+            box-shadow: none !important;
+        }
+    }
+</style>
+
+@@section Scripts {
+<partial name="_ValidationScriptsPartial" />
+}

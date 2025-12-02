@@ -1,0 +1,306 @@
+﻿@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+:root {
+    --primary-color: #4f46e5; 
+    --primary-hover: #4338ca;
+    --text-dark: #1f2937;
+    --text-gray: #6b7280;
+    --bg-light: #f9fafb;
+    --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+    --border-radius: 12px;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: var(--bg-light);
+    color: var(--text-dark);
+}
+
+h2, h4, h5, h6 {
+    font-weight: 600;
+    color: var(--text-dark);
+}
+
+/* =========================================
+   2. CARDS & CONTAINERS
+   ========================================= */
+.card {
+    border: none;
+    border-radius: var(--border-radius);
+    box-shadow: var(--card-shadow);
+    background: #fff;
+    margin-bottom: 24px;
+    transition: transform 0.2s ease;
+}
+
+.card-header {
+    background-color: #fff !important;
+    border-bottom: 1px solid #f3f4f6;
+    padding: 1.25rem 1.5rem;
+    border-radius: var(--border-radius) var(--border-radius) 0 0 !important;
+}
+
+    .card-header h5 {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: var(--text-dark);
+        margin: 0;
+    }
+
+    .card-header.bg-primary {
+        background: linear-gradient(135deg, var(--primary-color), #6366f1) !important;
+        color: white !important;
+    }
+
+        .card-header.bg-primary h5 {
+            color: white;
+        }
+
+.card-body {
+    padding: 1.5rem;
+}
+
+.card-footer {
+    background-color: #fff;
+    border-top: 1px solid #f3f4f6;
+    padding: 1.25rem 1.5rem;
+    border-radius: 0 0 var(--border-radius) var(--border-radius);
+}
+
+/* =========================================
+   3. PRODUCT TABLE
+   ========================================= */
+.table th {
+    border-top: none;
+    border-bottom: 2px solid #f3f4f6;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-gray);
+    font-weight: 600;
+    padding: 1rem;
+}
+
+.table td {
+    vertical-align: middle;
+    padding: 1.5rem 1rem;
+    border-top: 1px solid #f3f4f6;
+}
+
+/* Ảnh sản phẩm */
+.img-thumbnail {
+    border: none;
+    border-radius: 8px;
+    padding: 0;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+/* Tên sản phẩm */
+td h6 a {
+    color: var(--text-dark);
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.2s;
+}
+
+    td h6 a:hover {
+        color: var(--primary-color);
+    }
+
+/* Badge hết hàng */
+.badge-danger {
+    background-color: #fee2e2;
+    color: #ef4444;
+    font-weight: 500;
+    padding: 0.5em 0.8em;
+    border-radius: 6px;
+}
+
+/* =========================================
+   4. QUANTITY INPUT (Custom Style)
+   ========================================= */
+/* Ẩn nút mũi tên mặc định của input number */
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.input-group {
+    background: #f3f4f6;
+    border-radius: 50px; /* Bo tròn dạng viên thuốc */
+    padding: 2px;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
+}
+
+    .input-group .btn {
+        border: none;
+        background: transparent;
+        color: var(--text-gray);
+        border-radius: 50%;
+        width: 32px;
+        height: 32px;
+        padding: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s;
+    }
+
+        .input-group .btn:hover {
+            background: #fff;
+            color: var(--primary-color);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+.quantity-input {
+    background: transparent;
+    border: none;
+    font-weight: 600;
+    color: var(--text-dark);
+    max-width: 50px;
+}
+
+    .quantity-input:focus {
+        background: transparent;
+        box-shadow: none;
+    }
+
+/* =========================================
+   5. SUMMARY SECTION (Cột bên phải)
+   ========================================= */
+.card-header.bg-light {
+    background-color: #fff !important; 
+}
+
+#subtotal, #totalAmount {
+    font-family: 'Inter', sans-serif;
+}
+
+#totalAmount {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--primary-color) !important; 
+}
+
+.text-success strong {
+    color: #10b981;
+}
+
+/* Input mã giảm giá */
+#couponCode {
+    border-radius: 8px 0 0 8px;
+    border: 1px solid #e5e7eb;
+}
+
+    #couponCode:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+    }
+
+#btnApplyCoupon {
+    border-radius: 0 8px 8px 0;
+    border: 1px solid #e5e7eb;
+    border-left: none;
+}
+
+    #btnApplyCoupon:hover {
+        background-color: var(--primary-color);
+        color: white;
+        border-color: var(--primary-color);
+    }
+
+/* List chính sách */
+.list-unstyled li {
+    margin-bottom: 0.75rem;
+    color: var(--text-gray);
+    display: flex;
+    align-items: center;
+}
+
+    .list-unstyled li i {
+        margin-right: 10px;
+        background: #ecfdf5;
+        color: #10b981 !important;
+        width: 24px;
+        height: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        font-size: 0.7rem;
+    }
+
+/* =========================================
+   6. BUTTONS
+   ========================================= */
+.btn {
+    font-weight: 500;
+    padding: 0.6rem 1.2rem;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+/* Nút Checkout chính */
+.btn-primary {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+    box-shadow: 0 4px 6px rgba(79, 70, 229, 0.25);
+}
+
+    .btn-primary:hover {
+        background-color: var(--primary-hover);
+        border-color: var(--primary-hover);
+        transform: translateY(-1px);
+        box-shadow: 0 6px 8px rgba(79, 70, 229, 0.3);
+    }
+
+/* Nút xóa item */
+.btn-remove {
+    text-decoration: none;
+    font-size: 0.85rem;
+    opacity: 0.7;
+}
+
+    .btn-remove:hover {
+        opacity: 1;
+        text-decoration: none;
+    }
+
+/* Nút tiếp tục mua sắm */
+.btn-outline-secondary {
+    border-color: #e5e7eb;
+    color: var(--text-gray);
+}
+
+    .btn-outline-secondary:hover {
+        background-color: #f3f4f6;
+        color: var(--text-dark);
+        border-color: #d1d5db;
+    }
+
+/* Nút xóa tất cả (outline danger) */
+.btn-outline-danger {
+    border-color: #fee2e2;
+    color: #ef4444;
+    background: #fff;
+}
+
+    .btn-outline-danger:hover {
+        background-color: #fee2e2;
+        color: #dc2626;
+        border-color: #fee2e2;
+    }
+
+/* =========================================
+   7. EMPTY CART STATE
+   ========================================= */
+.text-center.py-5 i.fa-shopping-basket {
+    color: #e5e7eb !important; 
+    margin-bottom: 1.5rem !important;
+}
+
+.text-center.py-5 h4 {
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}

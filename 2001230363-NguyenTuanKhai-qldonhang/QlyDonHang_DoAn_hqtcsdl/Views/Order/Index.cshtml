@@ -1,0 +1,312 @@
+﻿@model IEnumerable<QlyDonHang_DoAn_hqtcsdl.Models.Order>
+
+@{
+    ViewBag.Title = "Quản lý đơn hàng";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<!-- CSS: Style cho bảng tối và thanh công cụ lọc -->
+<style>
+    /* --- Table Styles (Giữ nguyên như cũ) --- */
+    .table-cyber-dark {
+        --bs-table-bg: #0b1221;
+        --bs-table-color: #e2e8f0;
+        --bs-table-hover-bg: rgba(255, 255, 255, 0.05);
+        --bs-table-hover-color: #e2e8f0;
+        --bs-table-border-color: rgba(255, 255, 255, 0.1);
+        background-color: #0b1221 !important;
+        border-color: rgba(255, 255, 255, 0.1) !important;
+    }
+
+        .table-cyber-dark thead th {
+            background-color: #151e32 !important;
+            color: #ccff00 !important;
+            border-bottom: 2px solid #7c3aed !important;
+            box-shadow: none !important;
+        }
+
+        .table-cyber-dark tbody td {
+            background-color: #0b1221 !important;
+            color: #e2e8f0 !important;
+        }
+
+    .btn-outline-light {
+        color: #fff !important;
+        border-color: #fff !important;
+        opacity: 0.8;
+    }
+
+        .btn-outline-light:hover {
+            background-color: #fff !important;
+            color: #000 !important;
+            opacity: 1;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+        }
+
+    /* --- Filter Bar Styles (Mới thêm) --- */
+    .filter-input {
+        background-color: #151e32;
+        border: 1px solid #4a4a7a;
+        color: #fff;
+    }
+
+        .filter-input:focus {
+            background-color: #1a2642;
+            border-color: #00f3ff;
+            color: #fff;
+            box-shadow: 0 0 5px rgba(0, 243, 255, 0.3);
+        }
+
+        .filter-input::placeholder {
+            color: #6c757d;
+        }
+</style>
+
+<div class="d-flex justify-content-between align-items-center mb-4 mt-2">
+    <h2 class="header-title" style="font-size: 2rem;"><i class="fas fa-box me-3 text-neon-blue"></i>QUẢN LÝ ĐƠN HÀNG</h2>
+    <div>
+        <button class="btn btn-cyber" onclick="location.reload()"><i class="fas fa-sync-alt me-2"></i>Làm mới</button>
+    </div>
+</div>
+
+@if (ViewBag.Error != null)
+{
+    <div class="alert alert-danger bg-danger text-white border-0 shadow-sm mb-4">
+        <h5><i class="fas fa-exclamation-triangle me-2"></i> Lỗi Kết Nối</h5>
+        <p>@ViewBag.Error</p>
+    </div>
+}
+
+<!-- KHU VỰC LỌC & TÌM KIẾM (MỚI) -->
+<div class="row mb-3 g-2">
+    <div class="col-md-4">
+        <div class="input-group">
+            <span class="input-group-text bg-dark border-secondary text-info"><i class="fas fa-search"></i></span>
+            <input type="text" id="searchInput" class="form-control filter-input" placeholder="Tìm mã đơn, tên khách..." onkeyup="filterOrders()">
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="input-group">
+            <span class="input-group-text bg-dark border-secondary text-warning"><i class="fas fa-filter"></i></span>
+            <select id="statusFilter" class="form-select filter-input" onchange="filterOrders()">
+                <option value="">-- Tất cả trạng thái --</option>
+                <option value="Chờ xác nhận">Chờ xác nhận</option>
+                <option value="Đã xác nhận">Đã xác nhận</option>
+                <option value="Đang giao hàng">Đang giao hàng</option>
+                <option value="Hoàn thành">Hoàn thành</option>
+                <option value="Đã hủy">Đã hủy</option>
+            </select>
+        </div>
+    </div>
+    <div class="col-md-5 text-end text-muted small align-self-center">
+        <!-- Hiển thị số lượng kết quả -->
+        Hiển thị: <span id="recordCount" class="text-white fw-bold">0</span> đơn hàng
+    </div>
+</div>
+
+<!-- Container bảng -->
+<div class="cyber-card p-0 table-responsive" style="background-color: #0b1221; border: 1px solid rgba(255,255,255,0.1);">
+    <table class="table table-hover mb-0 align-middle table-cyber-dark" id="ordersTable">
+        <thead>
+            <tr>
+                <th class="ps-4">Mã ĐH</th>
+                <th>Ngày Đặt</th>
+                <th>Khách Hàng</th>
+                <th>Tổng Tiền</th>
+                <th>Trạng Thái</th>
+                <th class="text-end pe-4">Thao Tác</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model != null && Model.Any())
+            {
+                foreach (var item in Model)
+                {
+                    string badgeClass = "bg-secondary";
+                    string status = item.Status ?? "Mới";
+                    // Logic màu sắc trạng thái
+                    if (status.Contains("Hoàn thành")) { badgeClass = "bg-success"; } // status-ok
+                    else if (status.Contains("Hủy")) { badgeClass = "bg-danger"; }
+                    else if (status.Contains("Giao")) { badgeClass = "bg-primary"; } // status-ship
+                    else if (status.Contains("Chờ")) { badgeClass = "bg-warning text-dark"; } // status-wait
+
+                    <tr class="order-row">
+                        <td class="ps-4 fw-bold text-info order-no">@item.OrderNo</td>
+                        <td>@string.Format("{0:dd/MM/yyyy HH:mm}", item.OrderDate)</td>
+                        <td class="fw-bold order-customer">
+                            @(item.KhachHang != null ? item.KhachHang.TenKH : "Khách vãng lai")
+                            <div class="small text-secondary">@(item.KhachHang != null ? item.KhachHang.SoDT : "")</div>
+                        </td>
+                        <td class="fw-bold text-warning">@string.Format("{0:N0}", item.TotalAmount) ₫</td>
+                        <td>
+                            <!-- Class order-status dùng để JS tìm kiếm -->
+                            <span class="badge badge-neon @badgeClass order-status">@status</span>
+                        </td>
+                        <td class="text-end pe-4">
+                            <button class="btn btn-sm btn-outline-info me-1" onclick="loadOrderDetails(@item.Order_Id)"><i class="fas fa-eye"></i></button>
+                            <button class="btn btn-sm btn-outline-warning me-1" onclick="openUpdateModal(@item.Order_Id, '@item.Status')"><i class="fas fa-edit"></i></button>
+                            <a href="@Url.Action("Invoice", "Order", new { id = item.Order_Id })" target="_blank" class="btn btn-sm btn-outline-light me-1"><i class="fas fa-print"></i></a>
+                            @if (status != "Đã hủy" && status != "Hoàn thành")
+                            {
+                                <button class="btn btn-sm btn-outline-danger" onclick="openCancelModal(@item.Order_Id)"><i class="fas fa-times"></i></button>
+                            }
+                        </td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr id="noDataRow">
+                    <td colspan="6" class="text-center py-4 text-muted">Không có dữ liệu đơn hàng</td>
+                </tr>
+            }
+            <!-- Dòng thông báo không tìm thấy kết quả khi lọc -->
+            <tr id="noResultRow" style="display:none;">
+                <td colspan="6" class="text-center py-5 text-muted">
+                    <i class="fas fa-search-minus fa-2x mb-3"></i><br />
+                    Không tìm thấy đơn hàng phù hợp.
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<!-- Các Modal (Chi tiết, Cập nhật, Hủy) giữ nguyên KHÔNG ĐỔI -->
+<div class="modal fade" id="detailModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content" style="background-color: #0b1221; border: 1px solid #00f3ff; color: #fff;">
+            <div class="modal-header border-bottom border-secondary">
+                <h5 class="modal-title text-neon-blue">CHI TIẾT ĐƠN HÀNG</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="detailContent"><div class="text-center"><div class="spinner-border text-info"></div></div></div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="updateStatusModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content" style="background-color: #0b1221; border: 1px solid #ccff00; color: #fff;">
+            <div class="modal-header border-bottom border-secondary">
+                <h5 class="modal-title text-neon-green">CẬP NHẬT TRẠNG THÁI</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="updateStatusForm">
+                    <input type="hidden" id="updateOrderId" name="orderId" />
+                    <div class="mb-3">
+                        <label class="form-label">Trạng thái mới:</label>
+                        <select class="form-select bg-dark text-white border-secondary" id="newStatus" name="status">
+                            <option value="Chờ xác nhận">Chờ xác nhận</option>
+                            <option value="Đã xác nhận">Đã xác nhận</option>
+                            <option value="Đang giao hàng">Đang giao hàng</option>
+                            <option value="Hoàn thành">Hoàn thành</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer border-top border-secondary">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                <button type="button" class="btn btn-success" onclick="submitUpdateStatus()">Lưu</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="cancelModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content" style="background-color: #0b1221; border: 1px solid #7c3aed; color: #fff;">
+            <div class="modal-header border-bottom border-secondary"><h5 class="modal-title text-danger">HỦY ĐƠN HÀNG</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
+            <div class="modal-body">
+                <form id="cancelForm">
+                    <input type="hidden" id="cancelOrderId" name="orderId" />
+                    <div class="mb-3"><label class="form-label">Lý do hủy:</label><textarea class="form-control bg-dark text-white border-secondary" id="cancelReason" name="reason" rows="3"></textarea></div>
+                </form>
+            </div>
+            <div class="modal-footer border-top border-secondary"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button><button type="button" class="btn btn-danger" onclick="submitCancelOrder()">Hủy đơn</button></div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // --- CHỨC NĂNG LỌC ĐƠN HÀNG (MỚI) ---
+        function filterOrders() {
+            // 1. Lấy giá trị từ ô tìm kiếm và dropdown
+            var searchText = document.getElementById("searchInput").value.toLowerCase();
+            var statusFilter = document.getElementById("statusFilter").value;
+
+            // 2. Lấy tất cả các dòng trong bảng
+            var rows = document.querySelectorAll("#ordersTable tbody tr.order-row");
+            var visibleCount = 0;
+
+            rows.forEach(function (row) {
+                // 3. Lấy dữ liệu của từng dòng
+                var orderNo = row.querySelector(".order-no").textContent.toLowerCase();
+                var customer = row.querySelector(".order-customer").textContent.toLowerCase();
+                var status = row.querySelector(".order-status").textContent.trim(); // Phân biệt hoa thường chính xác cho Status
+
+                // 4. Kiểm tra điều kiện
+                // Điều kiện 1: Status phải khớp (hoặc chọn 'Tất cả')
+                var matchStatus = (statusFilter === "" || status === statusFilter);
+
+                // Điều kiện 2: Text tìm kiếm phải có trong Mã ĐH hoặc Tên Khách
+                var matchSearch = (orderNo.includes(searchText) || customer.includes(searchText));
+
+                // 5. Ẩn/Hiện dòng
+                if (matchStatus && matchSearch) {
+                    row.style.display = "";
+                    visibleCount++;
+                } else {
+                    row.style.display = "none";
+                }
+            });
+
+            // 6. Cập nhật số lượng và hiển thị thông báo nếu không có kết quả
+            document.getElementById("recordCount").textContent = visibleCount;
+            var noResultRow = document.getElementById("noResultRow");
+            if (visibleCount === 0 && rows.length > 0) {
+                noResultRow.style.display = "";
+            } else {
+                noResultRow.style.display = "none";
+            }
+        }
+
+        // Gọi lọc 1 lần khi trang vừa tải để đếm số lượng
+        document.addEventListener("DOMContentLoaded", function() {
+            filterOrders();
+        });
+
+        // --- CÁC HÀM CŨ (GIỮ NGUYÊN) ---
+        function loadOrderDetails(id) {
+            $('#detailModal').modal('show');
+            $('#detailContent').html('<div class="text-center py-3"><div class="spinner-border text-info"></div></div>');
+            $.get('@Url.Action("GetOrderDetails", "Order")/' + id, function (data) { $('#detailContent').html(data); })
+             .fail(function () { $('#detailContent').html('<div class="text-danger text-center">Lỗi tải dữ liệu!</div>'); });
+        }
+        function openUpdateModal(id, currentStatus) {
+            $('#updateOrderId').val(id);
+            $('#newStatus').val(currentStatus);
+            $('#updateStatusModal').modal('show');
+        }
+        function submitUpdateStatus() {
+            var formData = $('#updateStatusForm').serialize();
+            $.post('@Url.Action("UpdateStatus", "Order")', formData, function (res) {
+                if (res.success) { location.reload(); } else { alert(res.message); }
+            });
+        }
+        function openCancelModal(id) {
+            $('#cancelOrderId').val(id);
+            $('#cancelReason').val('');
+            $('#cancelModal').modal('show');
+        }
+        function submitCancelOrder() {
+            var reason = $('#cancelReason').val();
+            if (!reason.trim()) { alert('Vui lòng nhập lý do hủy!'); return; }
+            var formData = $('#cancelForm').serialize();
+            $.post('@Url.Action("CancelOrder", "Order")', formData, function (res) {
+                if (res.success) { location.reload(); } else { alert(res.message); }
+            });
+        }
+    </script>
+}

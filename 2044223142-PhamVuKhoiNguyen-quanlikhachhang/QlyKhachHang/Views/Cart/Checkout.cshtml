@@ -1,0 +1,273 @@
+@model QlyKhachHang.Models.Cart
+
+@{
+    ViewData["Title"] = "Thanh Toán";
+    var subTotal = ViewBag.SubTotal as decimal? ?? 0;
+    var shippingFee = ViewBag.ShippingFee as decimal? ?? 0;
+    var totalAmount = ViewBag.TotalAmount as decimal? ?? 0;
+}
+
+<div class="checkout-container">
+    <div class="row">
+        <div class="col-md-8">
+            <!-- Customer Information -->
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-user"></i> Thông Tin Khách Hàng
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong>Tên:</strong> @Model.Customer.CustomerName</p>
+                            <p><strong>Email:</strong> @Model.Customer.Email</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>S? ?T:</strong> @Model.Customer.Phone</p>
+                            <p><strong>??a ch?:</strong> @Model.Customer.Address, @Model.Customer.City</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Cart Items -->
+            <div class="card mb-4">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-shopping-cart"></i> S?n Ph?m Trong Gi?
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>S?n Ph?m</th>
+                                    <th class="text-center">S? L??ng</th>
+                                    <th class="text-end">??n Giá</th>
+                                    <th class="text-end">Thành Ti?n</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model.CartItems)
+                                {
+                                    var lineTotal = item.Quantity * item.UnitPrice;
+                                    <tr>
+                                        <td>
+                                            <strong>@item.Product.ProductName</strong><br/>
+                                            <small class="text-muted">@item.Product.Category</small>
+                                        </td>
+                                        <td class="text-center">@item.Quantity</td>
+                                        <td class="text-end">@item.UnitPrice.ToString("N0") VN?</td>
+                                        <td class="text-end"><strong>@lineTotal.ToString("N0") VN?</strong></td>
+                                    </tr>
+                                }
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td colspan="3" class="text-end"><strong>T?m tính:</strong></td>
+                                    <td class="text-end"><strong>@subTotal.ToString("N0") VN?</strong></td>
+                                </tr>
+                                <tr>
+                                    <td colspan="3" class="text-end">Phí v?n chuy?n:</td>
+                                    <td class="text-end">@shippingFee.ToString("N0") VN?</td>
+                                </tr>
+                                <tr class="table-primary">
+                                    <td colspan="3" class="text-end"><h5 class="mb-0">T?ng c?ng:</h5></td>
+                                    <td class="text-end"><h5 class="mb-0 text-primary">@totalAmount.ToString("N0") VN?</h5></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <!-- Checkout Form -->
+            <div class="card checkout-form">
+                <div class="card-header bg-warning text-dark">
+                    <h5 class="mb-0">
+                        <i class="fas fa-credit-card"></i> Thông Tin Thanh Toán
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form asp-action="ProcessCheckout" method="post">
+                        <input type="hidden" name="cartId" value="@Model.CartId" />
+
+                        <!-- Payment Method -->
+                        <div class="mb-3">
+                            <label for="paymentMethod" class="form-label">
+                                <i class="fas fa-money-bill-wave"></i> Ph??ng Th?c Thanh Toán *
+                            </label>
+                            <select class="form-select" id="paymentMethod" name="paymentMethod" required>
+                                <option value="">-- Ch?n ph??ng th?c --</option>
+                                <option value="Cash">?? Ti?n M?t</option>
+                                <option value="BankTransfer">?? Chuy?n Kho?n Ngân Hàng</option>
+                                <option value="CreditCard">?? Th? Tín D?ng</option>
+                                <option value="MobilePayment">?? Ví ?i?n T? (Momo/ZaloPay)</option>
+                            </select>
+                        </div>
+
+                        <!-- Shipping Address -->
+                        <div class="mb-3">
+                            <label for="shippingAddress" class="form-label">
+                                <i class="fas fa-map-marker-alt"></i> ??a Ch? Giao Hàng
+                            </label>
+                            <textarea class="form-control" id="shippingAddress" name="shippingAddress" rows="3" 
+                                      placeholder="Nh?p ??a ch? giao hàng (n?u khác v?i ??a ch? ??ng ký)">@Model.Customer.Address, @Model.Customer.City</textarea>
+                        </div>
+
+                        <!-- Notes -->
+                        <div class="mb-3">
+                            <label for="notes" class="form-label">
+                                <i class="fas fa-sticky-note"></i> Ghi Chú
+                            </label>
+                            <textarea class="form-control" id="notes" name="notes" rows="2" 
+                                      placeholder="Ghi chú cho ??n hàng (tùy ch?n)"></textarea>
+                        </div>
+
+                        <!-- Summary -->
+                        <div class="alert alert-info">
+                            <h6 class="mb-2"><i class="fas fa-info-circle"></i> Thông Tin ??n Hàng:</h6>
+                            <ul class="mb-0 ps-3">
+                                <li>Mã gi? hàng: <strong>#@Model.CartId</strong></li>
+                                <li>S? l??ng s?n ph?m: <strong>@Model.CartItems.Count</strong></li>
+                                <li>T?ng s? món: <strong>@Model.CartItems.Sum(ci => ci.Quantity)</strong></li>
+                                <li>T?ng ti?n: <strong class="text-primary">@totalAmount.ToString("N0") VN?</strong></li>
+                            </ul>
+                        </div>
+
+                        <!-- Date & Time Display -->
+                        <div class="alert alert-light border">
+                            <p class="mb-1">
+                                <i class="fas fa-calendar-day"></i> 
+                                <strong>Ngày ??t hàng:</strong> @DateTime.Now.ToString("dd/MM/yyyy")
+                            </p>
+                            <p class="mb-0">
+                                <i class="fas fa-clock"></i> 
+                                <strong>Gi? ??t hàng:</strong> @DateTime.Now.ToString("HH:mm:ss")
+                            </p>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-success btn-lg" onclick="return confirm('Xác nh?n ??t hàng?')">
+                                <i class="fas fa-check-circle"></i> Xác Nh?n ??t Hàng
+                            </button>
+                            <a asp-action="Details" asp-route-id="@Model.CartId" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left"></i> Quay L?i Gi? Hàng
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Payment Info -->
+            <div class="card mt-3">
+                <div class="card-body">
+                    <h6 class="mb-2"><i class="fas fa-shield-alt"></i> Thanh Toán An Toàn</h6>
+                    <ul class="small mb-0">
+                        <li>Thông tin ???c mã hóa</li>
+                        <li>B?o m?t giao d?ch</li>
+                        <li>H? tr? 24/7</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .checkout-container {
+        padding: 30px 0;
+    }
+
+    .card {
+        border: none;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        margin-bottom: 20px;
+    }
+
+    .card-header {
+        border-bottom: none;
+        padding: 15px 20px;
+    }
+
+    .checkout-form {
+        position: sticky;
+        top: 20px;
+    }
+
+    .table td, .table th {
+        vertical-align: middle;
+    }
+
+    .table tfoot {
+        border-top: 2px solid #dee2e6;
+    }
+
+    .btn-success {
+        background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+        border: none;
+        font-weight: 600;
+    }
+
+    .btn-success:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(67, 233, 123, 0.4);
+    }
+
+    .alert-info {
+        background-color: #e7f3ff;
+        border-left: 4px solid #2196f3;
+    }
+
+    .text-primary {
+        color: #2196f3 !important;
+    }
+
+    @@media (max-width: 768px) {
+        .checkout-form {
+            position: static;
+        }
+    }
+</style>
+
+@section Scripts {
+    <script>
+        // Hi?n th? thông tin b? sung d?a trên ph??ng th?c thanh toán
+        document.getElementById('paymentMethod').addEventListener('change', function() {
+            var method = this.value;
+            var info = '';
+            
+            switch(method) {
+                case 'BankTransfer':
+                    info = '?? Vui lòng chuy?n kho?n trong vòng 24 gi? ?? gi? ??n hàng.';
+                    break;
+                case 'CreditCard':
+                    info = '?? B?n s? ???c chuy?n ??n trang thanh toán an toàn.';
+                    break;
+                case 'MobilePayment':
+                    info = '?? Quét mã QR ?? thanh toán qua Momo ho?c ZaloPay.';
+                    break;
+                case 'Cash':
+                    info = '?? Thanh toán khi nh?n hàng (COD).';
+                    break;
+            }
+            
+            if (info) {
+                if (!document.getElementById('paymentInfo')) {
+                    var alertDiv = document.createElement('div');
+                    alertDiv.id = 'paymentInfo';
+                    alertDiv.className = 'alert alert-warning mt-2';
+                    alertDiv.innerHTML = info;
+                    this.parentElement.appendChild(alertDiv);
+                } else {
+                    document.getElementById('paymentInfo').innerHTML = info;
+                }
+            }
+        });
+    </script>
+}

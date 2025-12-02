@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="36c9355f8cf54b53a57c73b67cd6633b" Name="Diagram1">
+        <EntityTypeShape EntityType="FashionShopDbModel.InternalRequest" Width="1.5" PointX="5.75" PointY="6.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="FashionShopDbModel.KhachHang" Width="1.5" PointX="0.75" PointY="8.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="FashionShopDbModel.OrderDetail" Width="1.5" PointX="5.25" PointY="2.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="FashionShopDbModel.Order" Width="1.5" PointX="3" PointY="7.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="FashionShopDbModel.Product" Width="1.5" PointX="3" PointY="1.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="FashionShopDbModel.Product_Image_Mapping" Width="1.5" PointX="8.25" PointY="2.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="FashionShopDbModel.ProductImage" Width="1.5" PointX="0.75" PointY="2.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="FashionShopDbModel.RequestCounter" Width="1.5" PointX="7.75" PointY="5.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="FashionShopDbModel.SystemLog" Width="1.5" PointX="7.75" PointY="8.75" IsExpanded="true" />
+        <AssociationConnector Association="FashionShopDbModel.FK_Order_KhachHang" ManuallyRouted="false" />
+        <AssociationConnector Association="FashionShopDbModel.FK_OrderDetail_Order" ManuallyRouted="false" />
+        <AssociationConnector Association="FashionShopDbModel.FK_OrderDetail_Product" ManuallyRouted="false" />
+        <AssociationConnector Association="FashionShopDbModel.FK_Map_Product" ManuallyRouted="false" />
+        <AssociationConnector Association="FashionShopDbModel.FK_Product_DefaultImage" ManuallyRouted="false" />
+        <AssociationConnector Association="FashionShopDbModel.FK_Product_Image" ManuallyRouted="false" />
+        <AssociationConnector Association="FashionShopDbModel.FK_ProductImageMap_Product" ManuallyRouted="false" />
+        <AssociationConnector Association="FashionShopDbModel.FK_Map_Image" ManuallyRouted="false" />
+        <AssociationConnector Association="FashionShopDbModel.FK_ProductImageMap_Image" ManuallyRouted="false" />
+      </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>

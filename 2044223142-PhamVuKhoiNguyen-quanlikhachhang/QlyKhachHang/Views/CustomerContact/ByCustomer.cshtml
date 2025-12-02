@@ -1,0 +1,102 @@
+﻿@model IEnumerable<QlyKhachHang.Models.CustomerContact>
+
+@{
+    ViewData["Title"] = "Danh Sách Liên Hệ";
+    var customerId = (int?)ViewData["CustomerId"];
+    var customerName = ViewData["CustomerName"]?.ToString() ?? "";
+}
+
+<div class="container mt-4">
+    <div class="row mb-3">
+        <div class="col-md-8">
+            <h2>Danh Sách Liên Hệ - <strong>@customerName</strong></h2>
+        </div>
+        <div class="col-md-4 text-end">
+            <a asp-action="Create" asp-route-customerId="@customerId" class="btn btn-primary">
+                <i class="fas fa-plus"></i> Thêm Liên Hệ
+            </a>
+            <a asp-controller="Customer" asp-action="Details" asp-route-id="@customerId" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Quay Lại
+            </a>
+        </div>
+    </div>
+
+    @if (Model.Any())
+    {
+        <div class="row">
+            @foreach (var contact in Model)
+            {
+                <div class="col-md-6 mb-3">
+                    <div class="card contact-card h-100">
+                        @if (contact.IsPreferred)
+                        {
+                            <div class="card-header bg-success text-white">
+                                <span class="badge bg-light text-dark"><i class="fas fa-star"></i> Được Ưu Tiên</span>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="card-header bg-light"></div>
+                        }
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                <i class="fas fa-user"></i> @contact.ContactName
+                                <span class="badge bg-secondary">@contact.ContactType</span>
+                            </h5>
+
+                            <p class="mb-1">
+                                <strong>Mối Quan Hệ:</strong> @contact.Relationship
+                            </p>
+
+                            <p class="mb-2">
+                                <a href="tel:@contact.PhoneNumber" class="text-decoration-none">
+                                    <i class="fas fa-phone text-primary"></i> @contact.PhoneNumber
+                                </a>
+                            </p>
+
+                            <p class="mb-0">
+                                <a href="mailto:@contact.EmailAddress" class="text-decoration-none">
+                                    <i class="fas fa-envelope text-info"></i> @contact.EmailAddress
+                                </a>
+                            </p>
+                        </div>
+                        <div class="card-footer bg-light d-flex justify-content-between">
+                            <small class="text-muted">
+                                <i class="fas fa-calendar"></i> @contact.CreatedDate.ToString("dd/MM/yyyy")
+                            </small>
+                            <div>
+                                <a asp-action="Edit" asp-route-id="@contact.ContactId" class="btn btn-sm btn-warning">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <form asp-action="Delete" asp-route-id="@contact.ContactId" method="post" style="display:inline;">
+                                    <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Xác nhận xóa?')">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-info text-center" role="alert">
+            <h4><i class="fas fa-address-book"></i> Chưa có liên hệ nào</h4>
+            <p>Thêm liên hệ để lưu thông tin liên lạc của khách hàng.</p>
+        </div>
+    }
+</div>
+
+<style>
+    .contact-card {
+        border: 1px solid #dee2e6;
+        transition: all 0.3s ease;
+    }
+
+        .contact-card:hover {
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transform: translateY(-2px);
+        }
+</style>
