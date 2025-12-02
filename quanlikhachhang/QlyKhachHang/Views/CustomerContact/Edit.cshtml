@@ -1,0 +1,87 @@
+@model QlyKhachHang.Models.CustomerContact
+
+@{
+    ViewData["Title"] = "S?a Liên H?";
+    var customerId = (int?)ViewData["CustomerId"];
+    var customerName = ViewData["CustomerName"]?.ToString() ?? "";
+}
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <h2>?? S?a Liên H? - <strong>@customerName</strong></h2>
+            <hr>
+
+            <form asp-action="Edit" method="post">
+                <input type="hidden" asp-for="ContactId" />
+                <input type="hidden" asp-for="CustomerId" />
+                <input type="hidden" asp-for="CreatedDate" />
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label asp-for="ContactName" class="form-label">Tên Liên H? *</label>
+                            <input asp-for="ContactName" class="form-control">
+                            <span asp-validation-for="ContactName" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label asp-for="ContactType" class="form-label">Lo?i Liên H?</label>
+                            <select asp-for="ContactType" class="form-select">
+                                <option value="Primary">Chính</option>
+                                <option value="Secondary">Ph?</option>
+                                <option value="Emergency">Kh?n C?p</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label asp-for="PhoneNumber" class="form-label">S? ?i?n Tho?i</label>
+                            <input asp-for="PhoneNumber" class="form-control">
+                            <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label asp-for="EmailAddress" class="form-label">Email</label>
+                            <input asp-for="EmailAddress" class="form-control">
+                            <span asp-validation-for="EmailAddress" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Relationship" class="form-label">M?i Quan H?</label>
+                    <input asp-for="Relationship" class="form-control">
+                    <span asp-validation-for="Relationship" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3 form-check">
+                    <input asp-for="IsPreferred" class="form-check-input">
+                    <label asp-for="IsPreferred" class="form-check-label">
+                        ?ánh d?u là liên h? ???c ?u tiên
+                    </label>
+                </div>
+
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-warning">
+                        <i class="fas fa-save"></i> C?p Nh?t
+                    </button>
+                    <a asp-action="ByCustomer" asp-route-customerId="@customerId" class="btn btn-secondary">
+                        <i class="fas fa-times"></i> H?y
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

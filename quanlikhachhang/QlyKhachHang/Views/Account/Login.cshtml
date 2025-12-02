@@ -1,0 +1,357 @@
+﻿@model LoginViewModel
+
+@{
+    ViewData["Title"] = "Đăng Nhập";
+    Layout = "~/Views/Shared/_AuthLayout.cshtml";
+}
+
+@section Head {
+    <meta charset="utf-8" />
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .login-container {
+            width: 100%;
+            max-width: 400px;
+            padding: 20px;
+        }
+
+        .login-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            padding: 40px;
+            animation: slideUp 0.5s ease-out;
+        }
+
+        @@keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+            .login-header h1 {
+                color: #333;
+                font-size: 28px;
+                margin-bottom: 10px;
+                font-weight: 700;
+            }
+
+            .login-header p {
+                color: #666;
+                font-size: 14px;
+            }
+
+        .logo-icon {
+            width: 60px;
+            height: 60px;
+            margin: 0 auto 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 32px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+            .form-group label {
+                display: block;
+                margin-bottom: 8px;
+                color: #333;
+                font-weight: 500;
+                font-size: 14px;
+            }
+
+            .form-group input {
+                width: 100%;
+                padding: 12px 15px;
+                border: 2px solid #e0e0e0;
+                border-radius: 6px;
+                font-size: 14px;
+                transition: all 0.3s ease;
+                box-sizing: border-box;
+            }
+
+                .form-group input:focus {
+                    outline: none;
+                    border-color: #667eea;
+                    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+                }
+
+        .password-group {
+            position: relative;
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 12px;
+            top: 38px;
+            cursor: pointer;
+            color: #999;
+            font-size: 18px;
+            transition: color 0.3s ease;
+        }
+
+            .password-toggle:hover {
+                color: #667eea;
+            }
+
+        .remember-me {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+            .remember-me input[type="checkbox"] {
+                margin-right: 8px;
+                cursor: pointer;
+                width: 18px;
+                height: 18px;
+            }
+
+            .remember-me label {
+                cursor: pointer;
+                color: #666;
+                margin: 0;
+            }
+
+        .btn-login {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+            .btn-login:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+            }
+
+            .btn-login:active {
+                transform: translateY(0);
+            }
+
+        .error-message {
+            background: #fee;
+            color: #c33;
+            padding: 12px 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            border-left: 4px solid #c33;
+            animation: shake 0.5s ease-out;
+        }
+
+        @@keyframes shake {
+            0%, 100% {
+                transform: translateX(0);
+            }
+             
+            25% {
+                transform: translateX(-5px);
+            }
+
+            75% {
+                transform: translateX(5px);
+            }
+        }
+
+        .register-link {
+            text-align: center;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #e0e0e0;
+        }
+
+            .register-link p {
+                color: #666;
+                font-size: 14px;
+                margin: 0;
+            }
+
+            .register-link a {
+                color: #667eea;
+                text-decoration: none;
+                font-weight: 600;
+                transition: color 0.3s ease;
+            }
+
+                .register-link a:hover {
+                    color: #764ba2;
+                }
+
+        .validation-error {
+            color: #c33;
+            font-size: 13px;
+            margin-top: 5px;
+            display: none;
+        }
+
+            .validation-error.show {
+                display: block;
+            }
+
+        .info-box {
+            background: #f0f8ff;
+            border-left: 4px solid #667eea;
+            padding: 12px 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            font-size: 13px;
+            color: #333;
+            line-height: 1.6;
+        }
+
+            .info-box strong {
+                display: block;
+                margin-bottom: 5px;
+                color: #667eea;
+            }
+
+        .success-message {
+            background: #efe;
+            color: #3c3;
+            padding: 12px 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            border-left: 4px solid #3c3;
+        }
+    </style>
+}
+
+<div class="login-container">
+    <div class="login-card">
+        <div class="login-header">
+            <div class="logo-icon">
+                <i class="fas fa-users-cog"></i>
+            </div>
+            <h1>Quản Lý Khách Hàng</h1>
+            <p>Hệ Thống CRM Chuyên Nghiệp</p>
+        </div>
+
+        @if (TempData["Success"] != null)
+        {
+            <div class="success-message">
+                <i class="fas fa-check-circle"></i> @TempData["Success"]
+            </div>
+        }
+
+        @if (!ViewData.ModelState.IsValid && ViewData.ModelState.Values.Any(v => v.Errors.Count > 0))
+        {
+            <div class="error-message">
+                <i class="fas fa-exclamation-circle"></i> Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin.
+            </div>
+        }
+
+        <form method="post" asp-action="Login" id="loginForm" novalidate>
+            <div class="form-group">
+                <label for="UsernameOrEmail">
+                    <i class="fas fa-user"></i> Tên đăng nhập hoặc Email
+                </label>
+                <input type="text"
+                       class="form-control @(ViewData.ModelState["UsernameOrEmail"]?.Errors.Count > 0 ? "is-invalid" : "")"
+                       id="UsernameOrEmail"
+                       name="UsernameOrEmail"
+                       placeholder="admin hoặc admin@shop.com"
+                       value="@Model?.UsernameOrEmail"
+                       required
+                       autofocus />
+                <div asp-validation-for="UsernameOrEmail" class="validation-error show"></div>
+            </div>
+
+            <div class="form-group password-group">
+                <label for="Password">
+                    <i class="fas fa-lock"></i> Mật Khẩu
+                </label>
+                <input type="password"
+                       class="form-control @(ViewData.ModelState["Password"]?.Errors.Count > 0 ? "is-invalid" : "")"
+                       id="Password"
+                       name="Password"
+                       placeholder="Nhập mật khẩu"
+                       required />
+                <span class="password-toggle" onclick="togglePassword()">
+                    <i class="fas fa-eye" id="passwordIcon"></i>
+                </span>
+                <div asp-validation-for="Password" class="validation-error show"></div>
+            </div>
+
+            <div class="remember-me">
+                <input type="checkbox" id="RememberMe" name="RememberMe" value="true" />
+                <label for="RememberMe">Ghi nhớ tôi</label>
+            </div>
+
+            <button type="submit" class="btn-login">
+                <i class="fas fa-sign-in-alt"></i> Đăng Nhập
+            </button>
+        </form>
+
+        <div class="register-link">
+            <p>Chưa có tài khoản? <a asp-action="Register">Đăng ký ngay</a></p>
+        </div>
+    </div>
+</div>
+
+<script>
+    function togglePassword() {
+        const passwordInput = document.getElementById('Password');
+        const passwordIcon = document.getElementById('passwordIcon');
+
+        if (passwordInput.type === 'password') {
+            passwordInput.type = 'text';
+            passwordIcon.classList.remove('fa-eye');
+            passwordIcon.classList.add('fa-eye-slash');
+        } else {
+            passwordInput.type = 'password';
+            passwordIcon.classList.remove('fa-eye-slash');
+            passwordIcon.classList.add('fa-eye');
+        }
+    }
+
+    // Form validation
+    document.getElementById('loginForm').addEventListener('submit', function(e) {
+        const username = document.getElementById('UsernameOrEmail').value.trim();
+        const password = document.getElementById('Password').value.trim();
+
+        if (!username || !password) {
+            e.preventDefault();
+            alert('Vui lòng nhập tên đăng nhập/email và mật khẩu');
+        }
+    });
+</script>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

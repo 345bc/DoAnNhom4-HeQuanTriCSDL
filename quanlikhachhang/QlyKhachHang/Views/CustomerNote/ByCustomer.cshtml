@@ -1,0 +1,104 @@
+﻿@model IEnumerable<QlyKhachHang.Models.CustomerNote>
+
+@{
+    ViewData["Title"] = "Ghi Chú Khách Hàng";
+    var customerId = (int?)ViewData["CustomerId"];
+    var customerName = ViewData["CustomerName"]?.ToString() ?? "";
+}
+
+<div class="container mt-4">
+    <div class="row mb-3">
+        <div class="col-md-8">
+            <h2>Ghi Chú Khách Hàng - <strong>@customerName</strong></h2>
+        </div>
+        <div class="col-md-4 text-end">
+            <a asp-action="Create" asp-route-customerId="@customerId" class="btn btn-primary">
+                <i class="fas fa-plus"></i> Thêm Ghi Chú
+            </a>
+            <a asp-controller="Customer" asp-action="Details" asp-route-id="@customerId" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Quay Lại
+            </a>
+        </div>
+    </div>
+
+    @if (Model.Any())
+    {
+        <div class="row">
+            @foreach (var note in Model)
+            {
+                <div class="col-md-6 mb-3">
+                    <div class="card note-card h-100">
+                        <div class="card-header bg-light border-bottom">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <span class="badge @(note.Priority switch {
+                                        "Urgent" => "bg-danger",
+                                        "High" => "bg-warning text-dark",
+                                        "Normal" => "bg-info",
+                                        _ => "bg-secondary"
+                                    })">
+                                        @note.Priority
+                                    </span>
+                                    <span class="badge bg-secondary">@note.NoteType</span>
+                                </div>
+                                <div>
+                                    <a asp-action="Edit" asp-route-id="@note.NoteId" class="btn btn-sm btn-warning">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <form asp-action="Delete" asp-route-id="@note.NoteId" method="post" style="display:inline;">
+                                        <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Xác nhận xóa?')">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <p class="card-text">@note.NoteContent</p>
+                        </div>
+                        <div class="card-footer bg-light">
+                            <small class="text-muted">
+                                <i class="fas fa-calendar"></i> @note.CreatedDate.ToString("dd/MM/yyyy HH:mm")
+                                @if (!string.IsNullOrEmpty(note.CreatedBy))
+                                {
+                                    <span>• <i class="fas fa-user"></i> @note.CreatedBy</span>
+                                }
+                            </small>
+                            @if (note.ModifiedDate.HasValue)
+                            {
+                                <br>
+                                <small class="text-muted">
+                                    <i class="fas fa-pencil"></i> Sửa: @note.ModifiedDate.Value.ToString("dd/MM/yyyy HH:mm")
+                                </small>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-info text-center" role="alert">
+            <h4><i class="fas fa-inbox"></i> Chưa có ghi chú nào</h4>
+            <p>Thêm ghi chú đầu tiên để theo dõi thông tin khách hàng.</p>
+        </div>
+    }
+</div>
+
+<style>
+    .note-card {
+        border-left: 4px solid #007bff;
+        transition: all 0.3s ease;
+    }
+    .note-card:hover {
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        transform: translateY(-2px);
+    }
+    .note-card.urgent {
+        border-left-color: #dc3545;
+    }
+    .note-card.high {
+        border-left-color: #ffc107;
+    }
+</style>

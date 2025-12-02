@@ -1,0 +1,464 @@
+# ??? H? TH?NG QU?N LÝ C?A HÀNG TH?I TRANG - H??NG D?N HOÀN CH?NH
+
+## ?? M?c L?c
+1. [Gi?i Thi?u H? Th?ng](#gi?i-thi?u)
+2. [Các Module Chính](#các-module-chính)
+3. [Cách S? D?ng](#cách-s?-d?ng)
+4. [Qu?n Lý Khách Hàng](#qu?n-lý-khách-hàng)
+5. [Qu?n Lý S?n Ph?m](#qu?n-lý-s?n-ph?m)
+6. [Qu?n Lý Gi? Hàng](#qu?n-lý-gi?-hàng)
+7. [Qu?n Lý Thanh Toán](#qu?n-lý-thanh-toán)
+8. [Qu?n Lý Hóa ??n](#qu?n-lý-hóa-??n)
+
+---
+
+## ?? Gi?i Thi?u
+
+?ây là m?t h? th?ng **qu?n lý c?a hàng th?i trang** (CRM) toàn di?n, ???c xây d?ng b?ng **ASP.NET Core** và **SQL Server**.
+
+### ?? Tính N?ng Chính
+- ? Qu?n lý khách hàng (tìm ki?m, l?c, s?p x?p)
+- ? Qu?n lý s?n ph?m (CRUD, phân lo?i)
+- ? Qu?n lý gi? hàng
+- ? Qu?n lý thanh toán (nhi?u ph??ng th?c)
+- ? T?o và qu?n lý hóa ??n
+- ? ?ánh giá s?n ph?m
+- ? Giao di?n ??p, d? s? d?ng
+
+---
+
+## ??? Các Module Chính
+
+### 1. ?? Qu?n Lý Khách Hàng
+**Ch?c n?ng:**
+- Xem danh sách khách hàng
+- Tìm ki?m theo tên, S?T, email, ??a ch?
+- L?c theo tr?ng thái (Ho?t ??ng, Không ho?t ??ng, B? khóa)
+- S?p x?p theo tên, ngày t?o, email
+- Thêm khách hàng m?i
+- Ch?nh s?a thông tin khách hàng
+- Xóa khách hàng
+
+**???ng d?n:** `/Customer/Index`
+
+---
+
+### 2. ?? Qu?n Lý S?n Ph?m
+**Ch?c n?ng:**
+- Xem danh sách s?n ph?m
+- Xem chi ti?t s?n ph?m
+- Thêm s?n ph?m m?i
+- Ch?nh s?a thông tin s?n ph?m
+- Qu?n lý giá, kho hàng
+- Xóa s?n ph?m
+
+**???ng d?n:** `/Product/Index`
+
+**Thông tin S?n Ph?m:**
+- ID (Mã s?n ph?m)
+- Tên s?n ph?m
+- Mô t?
+- Giá
+- T?n kho
+- Danh m?c
+- Ngày t?o
+
+---
+
+### 3. ??? Qu?n Lý Gi? Hàng
+**Ch?c n?ng:**
+- T?o gi? hàng cho khách hàng
+- Xem danh sách gi? hàng
+- Thêm s?n ph?m vào gi?
+- C?p nh?t s? l??ng s?n ph?m
+- Xóa s?n ph?m kh?i gi?
+- Xem t?ng giá tr? gi? hàng
+
+**???ng d?n:** `/Cart/Index`
+
+**Chi Ti?t Gi? Hàng:**
+- Khách hàng
+- S? m?t hàng
+- T?ng giá tr?
+- Ngày t?o
+
+---
+
+### 4. ?? Qu?n Lý Thanh Toán
+**Ch?c n?ng:**
+- T?o thanh toán m?i
+- Xem danh sách thanh toán
+- Ch?nh s?a thông tin thanh toán
+- Xóa thanh toán
+- Qu?n lý tr?ng thái thanh toán
+
+**Ph??ng Th?c Thanh Toán:**
+1. ?? Ti?n m?t
+2. ?? Th? tín d?ng
+3. ?? Chuy?n kho?n ngân hàng
+4. ?? Ví ?i?n t?
+
+**Tr?ng Thái Thanh Toán:**
+- ? Hoàn Thành (Completed)
+- ? Ch? Xác Nh?n (Pending)
+- ? Th?t B?i (Failed)
+- ?? Hoàn L?i (Refunded)
+
+**???ng d?n:** `/Payment/Index`
+
+---
+
+### 5. ?? Qu?n Lý Hóa ??n
+**Ch?c n?ng:**
+- T?o hóa ??n m?i
+- Xem danh sách hóa ??n
+- Xem chi ti?t hóa ??n
+- Qu?n lý chi ti?t hóa ??n
+- Theo dõi thanh toán
+- Xem t?ng giá tr? hóa ??n
+
+**Tr?ng Thái Hóa ??n:**
+- ?? Nháp
+- ? ?ã Xác Nh?n
+- ?? ?ang Giao
+- ?? ?ã Giao
+- ? H?y
+
+**???ng d?n:** `/Invoice/Index`
+
+---
+
+## ?? Cách S? D?ng
+
+### Kh?i ??ng ?ng D?ng
+
+#### 1. Chu?n B? Môi Tr??ng
+```bash
+# Ki?m tra .NET SDK
+dotnet --version
+
+# K?t n?i SQL Server
+# M? SQL Server Management Studio
+# T?o database m?i ho?c s? d?ng database hi?n t?i
+```
+
+#### 2. C?p Nh?t Database
+```bash
+cd QlyKhachHang
+dotnet ef database update
+```
+
+#### 3. Ch?y ?ng D?ng
+```bash
+dotnet run
+```
+
+#### 4. Truy C?p
+```
+https://localhost:5001
+```
+
+---
+
+## ?? Qu?n Lý Khách Hàng
+
+### Xem Danh Sách Khách Hàng
+1. Click menu **Qu?n Lý** ? **Khách Hàng**
+2. S? hi?n th? danh sách t?t c? khách hàng
+
+### Tìm Ki?m Khách Hàng
+1. Nh?p t? khóa vào ô **Tìm ki?m**
+   - Có th? tìm theo: Tên, S?T, Email, ??a ch?
+2. Ch?n **Tr?ng thái** (Ho?t ??ng / Không ho?t ??ng / B? khóa)
+3. Click **Tìm ki?m**
+
+### S?p X?p D? Li?u
+1. Ch?n **S?p x?p theo:**
+   - Tên
+   - Ngày t?o
+   - Email
+2. Ch?n **Th? t?:** A ? Z ho?c Z ? A
+3. Click **Tìm ki?m**
+
+### Thêm Khách Hàng
+1. Click **Thêm Khách Hàng M?i**
+2. Nh?p thông tin:
+   - Tên khách hàng (*)
+   - S? ?i?n tho?i
+   - Email
+   - ??a ch?
+   - Thành ph?
+   - Ngày sinh
+   - Gi?i tính
+   - Tên ??ng nh?p
+   - M?t kh?u
+3. Click **T?o**
+
+### Ch?nh S?a Khách Hàng
+1. Tìm khách hàng trong danh sách
+2. Click nút **Ch?nh S?a** (???)
+3. C?p nh?t thông tin
+4. Click **L?u**
+
+### Xóa Khách Hàng
+1. Tìm khách hàng trong danh sách
+2. Click nút **Xóa** (???)
+3. Xác nh?n xóa
+
+---
+
+## ?? Qu?n Lý S?n Ph?m
+
+### Xem Danh Sách S?n Ph?m
+1. Click menu **Qu?n Lý** ? **S?n Ph?m**
+2. Hi?n th? t?t c? s?n ph?m
+
+### Thêm S?n Ph?m
+1. Click **Thêm S?n Ph?m**
+2. Nh?p thông tin:
+   - Tên s?n ph?m (*)
+   - Mô t?
+   - Giá (*)
+   - T?n kho (*)
+   - Danh m?c
+   - Hình ?nh (URL)
+3. Click **T?o**
+
+### Ch?nh S?a S?n Ph?m
+1. Tìm s?n ph?m ? Click **Ch?nh S?a**
+2. C?p nh?t thông tin
+3. Click **L?u**
+
+### Xóa S?n Ph?m
+1. Tìm s?n ph?m ? Click **Xóa**
+2. Xác nh?n xóa
+
+### Danh M?c S?n Ph?m
+- ?? Áo
+- ?? Qu?n
+- ?? Giày
+- ?? M?
+- ?? T?t
+- ?? Áo Khoác
+- ??? Th?t L?ng
+- ?? Ba Lô
+- ?? Dây Giày
+- ?? Túi
+
+---
+
+## ??? Qu?n Lý Gi? Hàng
+
+### T?o Gi? Hàng
+1. Click **T?o Gi? Hàng**
+2. Ch?n khách hàng
+3. Click **T?o**
+
+### Thêm S?n Ph?m Vào Gi?
+1. M? gi? hàng ? Click **Thêm Chi Ti?t**
+2. Ch?n s?n ph?m
+3. Nh?p s? l??ng
+4. Click **Thêm**
+
+### Xem Gi? Hàng
+1. Click **Xem** bên c?nh gi? hàng
+2. Hi?n th? t?t c? s?n ph?m trong gi?
+
+### Xóa S?n Ph?m Kh?i Gi?
+1. M? gi? hàng
+2. Tìm s?n ph?m ? Click **Xóa**
+
+---
+
+## ?? Qu?n Lý Thanh Toán
+
+### T?o Thanh Toán
+1. Click **Thêm Thanh Toán**
+2. Ch?n hóa ??n
+3. Nh?p s? ti?n
+4. Ch?n ph??ng th?c thanh toán:
+   - ?? Ti?n m?t
+   - ?? Th? tín d?ng
+   - ?? Chuy?n kho?n ngân hàng
+   - ?? Ví ?i?n t?
+5. N?u ch?n **Chuy?n kho?n ngân hàng**, c?n nh?p:
+   - Tên ngân hàng
+   - S? tài kho?n
+   - Tên ch? tài kho?n
+6. Nh?p mã giao d?ch (n?u có)
+7. Click **T?o Thanh Toán**
+
+### Xem Chi Ti?t Thanh Toán
+1. Tìm thanh toán trong danh sách
+2. Click nút **Xem** (???)
+3. Hi?n th? t?t c? thông tin
+
+### Ch?nh S?a Thanh Toán
+1. Tìm thanh toán (tr?ng thái ph?i là **Ch? Xác Nh?n**)
+2. Click nút **Ch?nh S?a** (???)
+3. C?p nh?t thông tin
+4. Click **L?u**
+
+### Xóa Thanh Toán
+1. Tìm thanh toán (tr?ng thái ph?i là **Ch? Xác Nh?n**)
+2. Click nút **Xóa** (???)
+3. Xác nh?n xóa
+
+### Dashboard Thanh Toán
+Hi?n th? tóm t?t:
+- ?? T?ng Ti?n: T?ng giá tr? hóa ??n
+- ? ?ã Thanh Toán: T?ng ?ã nh?n
+- ? Còn L?i: S? ti?n ch?a thanh toán
+- ?? T? L?: % thanh toán
+
+---
+
+## ?? Qu?n Lý Hóa ??n
+
+### T?o Hóa ??n
+1. Click **T?o Hóa ??n**
+2. Ch?n khách hàng (*)
+3. Nh?p ngày hóa ??n
+4. Nh?p ghi chú
+5. Click **T?o**
+
+### Xem Hóa ??n
+1. Click **Xem Chi Ti?t**
+2. Hi?n th?:
+   - Thông tin khách hàng
+   - Chi ti?t s?n ph?m
+   - T?ng giá tr?
+   - Tr?ng thái thanh toán
+
+### Thêm Chi Ti?t Hóa ??n
+1. M? hóa ??n ? Click **Thêm Chi Ti?t**
+2. Ch?n s?n ph?m
+3. Nh?p s? l??ng
+4. Nh?p ??n giá (s? t? ??ng l?y t? s?n ph?m)
+5. Click **Thêm**
+
+### C?p Nh?t Tr?ng Thái Hóa ??n
+1. M? hóa ??n
+2. Click **C?p Nh?t Tr?ng Thái**
+3. Ch?n tr?ng thái m?i:
+   - ?? Nháp
+   - ? ?ã Xác Nh?n
+   - ?? ?ang Giao
+   - ?? ?ã Giao
+   - ? H?y
+4. Click **L?u**
+
+---
+
+## ?? Tìm Ki?m Nâng Cao
+
+### Tìm Ki?m Khách Hàng
+**Ví d?:**
+- Tìm "Nguy?n" ? Hi?n th? t?t c? khách hàng có tên ch?a "Nguy?n"
+- Tìm "0123456789" ? Tìm theo S?T
+- Tìm "abc@gmail.com" ? Tìm theo Email
+- Tìm "TP.HCM" ? Tìm theo thành ph?
+
+### L?c Khách Hàng
+- **Ho?t ??ng:** Khách hàng có th? mua hàng
+- **Không ho?t ??ng:** Khách hàng t?m d?ng
+- **B? khóa:** Khách hàng b? c?m
+
+---
+
+## ?? Báo Cáo & Th?ng Kê
+
+### Thông Tin Trên Dashboard
+- ?? T?ng khách hàng
+- ?? T?ng s?n ph?m
+- ?? T?ng doanh thu
+- ? Hóa ??n ch?a thanh toán
+
+### Xu?t Báo Cáo
+*(Tính n?ng s?p t?i)*
+
+---
+
+## ?? Cài ??t & B?o Trì
+
+### Database
+```bash
+# Xem migrations
+dotnet ef migrations list
+
+# Thêm migration m?i
+dotnet ef migrations add <TênMigration>
+
+# Update database
+dotnet ef database update
+
+# Xóa migration cu?i cùng
+dotnet ef migrations remove
+
+# Xóa toàn b? database
+dotnet ef database drop
+```
+
+### Build
+```bash
+# Build project
+dotnet build
+
+# Ch?y unit tests
+dotnet test
+```
+
+---
+
+## ?? X? Lý S? C?
+
+### L?i K?t N?i Database
+**L?i:** "Cannot open database 'QlyKhachHang'"
+
+**Gi?i pháp:**
+1. M? SQL Server Management Studio
+2. T?o database m?i: `QlyKhachHang`
+3. Ch?y: `dotnet ef database update`
+
+### L?i Build
+**L?i:** "Build failed"
+
+**Gi?i pháp:**
+```bash
+# Xóa bin và obj
+rm -r bin obj
+
+# Rebuild
+dotnet build
+```
+
+### L?i Hi?n Th? Ti?ng Vi?t
+**L?i:** Hi?n th? `?` thay vì ký t? ti?ng Vi?t
+
+**Gi?i pháp:**
+- S? d?ng trình duy?t Chrome, Edge, Firefox
+- Ki?m tra encoding: UTF-8
+
+---
+
+## ?? Liên H? H? Tr?
+
+**Các v?n ?? th??ng g?p:**
+1. Không th? k?t n?i database ? Ki?m tra SQL Server
+2. L?i build ? Xóa th? m?c bin, obj r?i build l?i
+3. Giao di?n l?i ? Ki?m tra encoding UTF-8
+
+---
+
+## ?? Ghi Chú Quan Tr?ng
+
+1. **D? Li?u Quan Tr?ng:** Sao l?u database ??nh k?
+2. **M?t Kh?u:** Không chia s? m?t kh?u admin
+3. **Phiên B?n:** C?p nh?t .NET m?i nh?t
+4. **B?o M?t:** Không ?? l? connection string
+
+---
+
+**C?p nh?t l?n cu?i:** 2024
+**Phiên b?n:** 1.0
+**Tr?ng thái:** ? S?n xu?t (Production Ready)

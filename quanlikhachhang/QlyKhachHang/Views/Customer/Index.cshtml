@@ -1,0 +1,338 @@
+﻿@model IEnumerable<QlyKhachHang.Models.Customer>
+
+@{
+    ViewData["Title"] = "Danh Sách Khách Hàng";
+    var searchTerm = ViewData["SearchTerm"]?.ToString() ?? "";
+    var sortBy = ViewData["SortBy"]?.ToString() ?? "CustomerName";
+    var sortOrder = ViewData["SortOrder"]?.ToString() ?? "asc";
+    var statusFilter = ViewData["StatusFilter"]?.ToString() ?? "";
+    var currentPage = (int?)ViewData["CurrentPage"] ?? 1;
+    var totalPages = (int?)ViewData["TotalPages"] ?? 1;
+    var totalCount = (int?)ViewData["TotalCount"] ?? 0;
+}
+
+@section Head {
+    <link rel="stylesheet" href="~/css/customer-management.css" />
+}
+
+<div class="customer-management-container">
+    <!-- Header Section -->
+    <div class="management-header mb-4">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <h1 class="page-title">
+                    <i class="fas fa-users"></i> Quản Lý Khách Hàng
+                </h1>
+                <p class="text-muted">Tổng cộng: <strong>@totalCount</strong> khách hàng</p>
+            </div>
+            <div class="col-md-6 text-end">
+                <a asp-action="Create" class="btn btn-primary btn-lg">
+                    <i class="fas fa-plus-circle"></i> Thêm Khách Hàng Mới
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Search and Filter Section -->
+    <div class="card filter-card mb-4">
+        <div class="card-body">
+            <form method="get" asp-action="Index" class="row g-3">
+                <div class="col-md-5">
+                    <label class="form-label">Tìm kiếm</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fas fa-search"></i></span>
+                        <input type="text" 
+                               name="searchTerm" 
+                               class="form-control" 
+                               placeholder="Tên, điện thoại, email, thành phố..." 
+                               value="@searchTerm">
+                    </div>
+                    <small class="form-text text-muted">Tìm theo tên, SĐT, email hoặc địa chỉ</small>
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label">Trạng thái</label>
+                    <select name="statusFilter" class="form-select">
+                        <option value="">Tất cả trạng thái</option>
+                        <option value="Active" selected="@(statusFilter == "Active" ? "selected" : null)">Hoạt động</option>
+                        <option value="Inactive" selected="@(statusFilter == "Inactive" ? "selected" : null)">Không hoạt động</option>
+                        <option value="Blocked" selected="@(statusFilter == "Blocked" ? "selected" : null)">Bị khóa</option>
+                    </select>
+                </div>
+
+                <div class="col-md-2">
+                    <label class="form-label">Sắp xếp theo</label>
+                    <select name="sortBy" class="form-select">
+                        <option value="CustomerName" selected="@(sortBy == "CustomerName" ? "selected" : null)">Tên</option>
+                        <option value="CreatedDate" selected="@(sortBy == "CreatedDate" ? "selected" : null)">Ngày tạo</option>
+                        <option value="Email" selected="@(sortBy == "Email" ? "selected" : null)">Email</option>
+                    </select>
+                </div>
+
+                <div class="col-md-2">
+                    <label class="form-label">Thứ tự</label>
+                    <select name="sortOrder" class="form-select">
+                        <option value="asc" selected="@(sortOrder == "asc" ? "selected" : null)">A → Z</option>
+                        <option value="desc" selected="@(sortOrder == "desc" ? "selected" : null)">Z → A</option>
+                    </select>
+                </div>
+
+                <div class="col-12">
+                    <div class="btn-group" role="group">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-filter"></i> Tìm kiếm
+                        </button>
+                        <a asp-action="Index" class="btn btn-secondary">
+                            <i class="fas fa-redo"></i> Xóa bộ lọc
+                        </a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Alerts -->
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="fas fa-check-circle"></i> @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="fas fa-exclamation-circle"></i> @TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <!-- Data Table -->
+    @if (Model != null && Model.Any())
+    {
+        <div class="card table-card">
+            <div class="table-responsive">
+                <table class="table table-hover customer-grid">
+                    <thead>
+                        <tr>
+                            <th class="text-center" style="width: 60px;">
+                                <input type="checkbox" class="form-check-input" id="selectAll">
+                            </th>
+                            <th style="width: 80px;">
+                                <a href="@Url.Action("Index", new { sortBy = "CustomerId", sortOrder = sortOrder == "asc" && sortBy == "CustomerId" ? "desc" : "asc", searchTerm = searchTerm, statusFilter = statusFilter })" class="sort-link">
+                                    ID @if (sortBy == "CustomerId") { <i class="fas fa-arrow-@(sortOrder == "asc" ? "up" : "down")"></i> }
+                                </a>
+                            </th>
+                            <th>
+                                <a href="@Url.Action("Index", new { sortBy = "CustomerName", sortOrder = sortOrder == "asc" && sortBy == "CustomerName" ? "desc" : "asc", searchTerm = searchTerm, statusFilter = statusFilter })" class="sort-link">
+                                    Tên Khách Hàng @if (sortBy == "CustomerName") { <i class="fas fa-arrow-@(sortOrder == "asc" ? "up" : "down")"></i> }
+                                </a>
+                            </th>
+                            <th>Số Điện Thoại</th>
+                            <th>Email</th>
+                            <th>Địa Chỉ</th>
+                            <th>Thành Phố</th>
+                            <th>Trạng Thái</th>
+                            <th>
+                                <a href="@Url.Action("Index", new { sortBy = "CreatedDate", sortOrder = sortOrder == "asc" && sortBy == "CreatedDate" ? "desc" : "asc", searchTerm = searchTerm, statusFilter = statusFilter })" class="sort-link">
+                                    Ngày Tạo @if (sortBy == "CreatedDate") { <i class="fas fa-arrow-@(sortOrder == "asc" ? "up" : "down")"></i> }
+                                </a>
+                            </th>
+                            <th class="text-center" style="width: 200px;">Hành Động</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr class="data-row">
+                                <td class="text-center">
+                                    <input type="checkbox" class="form-check-input row-checkbox" value="@item.CustomerId">
+                                </td>
+                                <td>
+                                    <span class="badge bg-primary">@item.CustomerId</span>
+                                </td>
+                                <td>
+                                    <strong>@(item.CustomerName ?? "N/A")</strong>
+                                    <br>
+                                    <small class="text-muted">@(item.Username ?? "N/A")</small>
+                                </td>
+                                <td>
+                                    @if (!string.IsNullOrEmpty(item.Phone))
+                                    {
+                                        <a href="tel:@item.Phone" class="text-decoration-none">
+                                            <i class="fas fa-phone"></i> @item.Phone
+                                        </a>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">N/A</span>
+                                    }
+                                </td>
+                                <td>
+                                    @if (!string.IsNullOrEmpty(item.Email))
+                                    {
+                                        <a href="mailto:@item.Email" class="text-decoration-none">
+                                            <i class="fas fa-envelope"></i> @item.Email
+                                        </a>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">N/A</span>
+                                    }
+                                </td>
+                                <td>
+                                    <small>@(string.IsNullOrEmpty(item.Address) ? "N/A" : item.Address)</small>
+                                </td>
+                                <td>
+                                    @if (!string.IsNullOrEmpty(item.City))
+                                    {
+                                        <i class="fas fa-map-marker-alt"></i> @item.City
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">N/A</span>
+                                    }
+                                </td>
+                                <td>
+                                    @{
+                                        string statusClass = item.Status switch
+                                        {
+                                            "Active" => "bg-success",
+                                            "Inactive" => "bg-warning",
+                                            "Blocked" => "bg-danger",
+                                            _ => "bg-secondary"
+                                        };
+                                        string statusText = item.Status switch
+                                        {
+                                            "Active" => "Hoạt động",
+                                            "Inactive" => "Không hoạt động",
+                                            "Blocked" => "Bị khóa",
+                                            _ => "Khác"
+                                        };
+                                    }
+                                    <span class="badge @statusClass">@statusText</span>
+                                </td>
+                                <td>
+                                    @item.CreatedDate.ToString("dd/MM/yyyy HH:mm")
+                                </td>
+                                <td class="text-center">
+                                    <div class="btn-group btn-group-sm" role="group">
+                                        <a asp-action="Details" 
+                                           asp-route-id="@item.CustomerId" 
+                                           class="btn btn-info" 
+                                           title="Xem chi tiết">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        <a asp-action="Edit" 
+                                           asp-route-id="@item.CustomerId" 
+                                           class="btn btn-warning" 
+                                           title="Chỉnh sửa">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <a asp-action="Delete" 
+                                           asp-route-id="@item.CustomerId" 
+                                           class="btn btn-danger" 
+                                           title="Xóa">
+                                            <i class="fas fa-trash"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Pagination -->
+        @if (totalPages > 1)
+        {
+            <nav aria-label="Page navigation" class="mt-4">
+                <ul class="pagination justify-content-center">
+                    <li class="page-item @(currentPage == 1 ? "disabled" : "")">
+                        <a class="page-link" href="@Url.Action("Index", new { page = 1, searchTerm = searchTerm, sortBy = sortBy, sortOrder = sortOrder, statusFilter = statusFilter })">
+                            <i class="fas fa-chevron-left"></i> Đầu tiên
+                        </a>
+                    </li>
+
+                    @{
+                        int startPage = Math.Max(1, currentPage - 2);
+                        int endPage = Math.Min(totalPages, currentPage + 2);
+
+                        if (startPage > 1)
+                        {
+                            <li class="page-item"><span class="page-link">...</span></li>
+                        }
+
+                        for (int i = startPage; i <= endPage; i++)
+                        {
+                            <li class="page-item @(i == currentPage ? "active" : "")">
+                                <a class="page-link" href="@Url.Action("Index", new { page = i, searchTerm = searchTerm, sortBy = sortBy, sortOrder = sortOrder, statusFilter = statusFilter })">
+                                    @i
+                                </a>
+                            </li>
+                        }
+
+                        if (endPage < totalPages)
+                        {
+                            <li class="page-item"><span class="page-link">...</span></li>
+                        }
+                    }
+
+                    <li class="page-item @(currentPage == totalPages ? "disabled" : "")">
+                        <a class="page-link" href="@Url.Action("Index", new { page = totalPages, searchTerm = searchTerm, sortBy = sortBy, sortOrder = sortOrder, statusFilter = statusFilter })">
+                            Cuối cùng <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+
+            <div class="text-center text-muted mt-2">
+                <small>Trang @currentPage / @totalPages (Hiển thị @Model.Count() trên @totalCount khách hàng)</small>
+            </div>
+        }
+    }
+    else
+    {
+        <div class="alert alert-info alert-lg text-center" role="alert">
+            <div class="empty-state">
+                <i class="fas fa-inbox"></i>
+                <h4>Không có khách hàng nào</h4>
+                <p class="text-muted">@(string.IsNullOrEmpty(searchTerm) ? "Chưa có khách hàng nào trong hệ thống." : "Không tìm thấy khách hàng phù hợp với điều kiện tìm kiếm.")</p>
+                <a asp-action="Create" class="btn btn-primary mt-3">
+                    <i class="fas fa-plus"></i> Thêm khách hàng mới
+                </a>
+            </div>
+        </div>
+    }
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Select all checkbox
+    const selectAllCheckbox = document.getElementById('selectAll');
+    const rowCheckboxes = document.querySelectorAll('.row-checkbox');
+    
+    if (selectAllCheckbox) {
+        selectAllCheckbox.addEventListener('change', function() {
+            rowCheckboxes.forEach(checkbox => {
+                checkbox.checked = this.checked;
+            });
+        });
+    }
+    
+    // Row checkbox change
+    rowCheckboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+            const allChecked = Array.from(rowCheckboxes).every(cb => cb.checked);
+            const anyChecked = Array.from(rowCheckboxes).some(cb => cb.checked);
+            
+            if (selectAllCheckbox) {
+                selectAllCheckbox.checked = allChecked;
+                selectAllCheckbox.indeterminate = anyChecked && !allChecked;
+            }
+        });
+    });
+});
+</script>
